@@ -1,2 +1,2 @@
 # OnlineProblemsCodes
-A codebase of my own solutions to the OJ or LeetCode problems
+一些网上的编程题的题解（来源：LeetCode,Nowcoder,PTA...），目前包含C++和JAVA的方法
