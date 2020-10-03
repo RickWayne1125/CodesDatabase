@@ -10,8 +10,11 @@ with open("data.txt", "r", encoding="utf-8") as f:
                 dict[item] += 1;
             else:
                 dict.setdefault(item, 1)
-        #print(line)
-with open("dict.txt","w",encoding="utf-8") as f:
+        # print(line)
+with open("dict.txt", "w", encoding="utf-8") as f:
     for word in dict.keys():
-        s = word + ' ' + str(dict[word]) + '\n'
-        f.write(s)
+        list = word.split(sep="/")
+        print(list)
+        if (len(list) > 1):
+            s = list[0] + ' ' + str(dict[word]) + ' ' + list[1] + '\n'
+            f.write(s)
