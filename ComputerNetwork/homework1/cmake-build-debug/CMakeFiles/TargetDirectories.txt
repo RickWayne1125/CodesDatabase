@@ -1,0 +1,3 @@
+C:/Resources/github/OnlineCodes/ComputerNetwork/homework1/cmake-build-debug/CMakeFiles/homework1.dir
+C:/Resources/github/OnlineCodes/ComputerNetwork/homework1/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Resources/github/OnlineCodes/ComputerNetwork/homework1/cmake-build-debug/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Resources/github/OnlineCodes/ComputerNetwork/homework1/sim.cpp
+iostream
+-
+assert.h
+-
+string.h
+-
+
