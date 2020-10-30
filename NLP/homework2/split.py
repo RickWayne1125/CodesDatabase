@@ -11,7 +11,7 @@ def readData():
         # print(lines)
 
 
-def patchForward(sentence, dict):
+def matchForward(sentence, dict):
     max_len = 10
     length = len(sentence)
     result = []
@@ -28,7 +28,7 @@ def patchForward(sentence, dict):
     return result
 
 
-def patchBack(sentence, dict):
+def matchBack(sentence, dict):
     max_len = 10
     length = len(sentence)
     result = []
@@ -46,7 +46,7 @@ def patchBack(sentence, dict):
     return result
 
 
-def patchBi(result1, result2):
+def matchBi(result1, result2):
     len1 = len(result1)
     len2 = len(result2)
     if (result1 == result2):
@@ -79,9 +79,9 @@ def countWord(n,result):
 if __name__ == "__main__":
     dict = readData()
     sentence = input("Please enter the test sentence: ")
-    result1 = patchForward(sentence, dict)
+    result1 = matchForward(sentence, dict)
     print("The result of FMM: ",result1)
-    result2 = patchBack(sentence, dict)
+    result2 = matchBack(sentence, dict)
     print("The result of BMM: ",result2)
-    result3=patchBi(result1,result2)
+    result3=matchBi(result1,result2)
     print("The result of Bi-Direction: ",result3)
