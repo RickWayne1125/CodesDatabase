@@ -12,8 +12,3 @@ def readData():
     return rawx, rawy
 
 # def normalizeData(rawx, rawy):
-#
-
-
-if __name__ == "__main__":
-    readData()

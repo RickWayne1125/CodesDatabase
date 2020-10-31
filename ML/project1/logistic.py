@@ -1,19 +1,70 @@
 import numpy as np
 import math
-from .readData import *
+import pandas as pd
+import matplotlib.pyplot as plt
 
 
-def initModel():
-    xr, yr = readData()
-    num = len(yr)  # 数据条数
-    col = len(xr[0])  # 属性数量
-    w = np.array()
-    b = np.array()
-    beta = np.vstack(w, b)
+class Logistic:
+    def __init__(self):
+        self.xr, self.yr = self.readData()
+        self.xp, self.yp = self.xr, self.yr
+        self.num = len(self.yr)  # 数据条数
+        self.col = len(self.xr[0])  # 属性数量
+        self.w = np.zeros((self.col, 1))
+        self.b = np.zeros((1, 1))
+        self.beta = np.row_stack((self.w, self.b))
+        self.xt = np.column_stack((self.xr, np.ones((self.num, 1))))
+        self.eta = 0.001
+
+    def readData(self):
+        data = pd.read_csv('../data/watermelon_3a.csv')
+        raw_data = np.array(data)
+        rawx = raw_data[:, :len(raw_data[0]) - 1]
+        rawy = raw_data[:, len(raw_data[0]) - 1]
+        return rawx, rawy
+
+    def getLoss(self):
+        loss = 0
+        for i in range(self.num):
+            temp = np.dot(self.beta.T, self.xt[i])
+            loss += -self.yr[i] * temp + np.log(1 + pow(np.e, temp))
+        return loss
+
+    def gradDescent(self):
+        dbeta = 0
+        for i in range(self.num):
+            temp = 1 + pow(np.e, np.dot(self.beta.T, self.xt[i]))
+            dbeta -= self.xt[i] * (self.yr[i] - 1 + 1 / temp)
+        dbeta = np.array(dbeta).reshape((self.col + 1, 1))
+        self.beta = self.beta - self.eta * dbeta
+
+    def trainModel(self, epoch=60000, eta=0.001, eps=0.1):
+        loss = []
+        x = []
+        for i in range(epoch):
+            l = self.getLoss()
+            loss.append(l)
+            x.append(i)
+            # print("epoch = ", i, ", loss = ", l)
+            if (l <= eps):
+                break;
+            self.gradDescent()
+        plt.plot(x, loss)
+        plt.show()
+
+    def preData(self):
+        for i in range(self.num):
+            z = pow(np.e, np.dot(self.beta.T, self.xt[i]))
+            p1 = z / (1 + z)
+            if (p1 >= 0.5):
+                pre = 1
+            else:
+                pre = 0
+            print('pre = ', pre, ', real = ', self.yr[i])
 
 
-def cntLoss(xr, yr, num, beta):
-    loss = 0
-    for i in range(num):
-        loss += -yr[i] * beta.T * xr[i] + pow(math.log(1 + math.e), beta.T * xr[i])
-    return loss
+if __name__ == '__main__':
+    model = Logistic()
+    model.__init__()
+    model.trainModel()
+    model.preData()
