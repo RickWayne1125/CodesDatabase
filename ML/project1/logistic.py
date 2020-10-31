@@ -23,6 +23,15 @@ class Logistic:
         rawy = raw_data[:, len(raw_data[0]) - 1]
         return rawx, rawy
 
+    def Shuffle(self):
+        seed = np.random.randint(0, 100)
+        np.random.seed(seed)
+        x = np.random.permutation(self.xt)
+        np.random.seed(seed)
+        y = np.random.permutation(self.yt)
+        self.xt = x
+        self.yt = y
+
     def getLoss(self):
         loss = 0
         for i in range(self.num):
@@ -45,7 +54,7 @@ class Logistic:
             l = self.getLoss()
             loss.append(l)
             x.append(i)
-            # print("epoch = ", i, ", loss = ", l)
+            print("epoch = ", i, ", loss = ", l)
             if (l <= eps):
                 break;
             self.gradDescent()
@@ -60,7 +69,7 @@ class Logistic:
                 pre = 1
             else:
                 pre = 0
-            print('pre = ', pre, ', real = ', self.yr[i])
+            print('pre = ', pre, ', real = ', self.yr[i],", posilibity of 1 = ",p1)
 
 
 if __name__ == '__main__':
