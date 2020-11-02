@@ -1,4 +1,7 @@
 # 作业2
+
+**Copyright@rickwayne1125**
+
 ## 题目要求
 使用前向、后向算法实现一个简单中文分词器，附件中有一个词典可供同学们使用。
 
@@ -139,3 +142,7 @@ if __name__ == "__main__":
 ![image-20201102163532669](3.png)
 
 ![image-20201102163633725](4.png)
+
+
+
+*此次作业GitHub链接：https://github.com/RickWayne1125/CodesDatabase/tree/master/NLP/homework2*
