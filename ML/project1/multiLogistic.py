@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-class Logistic:
+class MultiLogistic:
     def __init__(self):
         self.xr, self.yr = self.readData()
         self.xp, self.yp = self.xr, self.yr
@@ -17,20 +17,12 @@ class Logistic:
         self.eta = 0.001
 
     def readData(self):
-        data = pd.read_csv('../data/watermelon_3a.csv')
+        data = pd.read_csv('../data/Iris.csv')
         raw_data = np.array(data)
-        rawx = raw_data[:, :len(raw_data[0]) - 1]
+        rawx = raw_data[:, 1:len(raw_data[0]) - 1]
         rawy = raw_data[:, len(raw_data[0]) - 1]
         return rawx, rawy
 
-    def Shuffle(self):
-        seed = np.random.randint(0, 100)
-        np.random.seed(seed)
-        x = np.random.permutation(self.xt)
-        np.random.seed(seed)
-        y = np.random.permutation(self.yt)
-        self.xt = x
-        self.yt = y
 
     def getLoss(self):
         loss = 0
@@ -74,7 +66,7 @@ class Logistic:
 
 
 if __name__ == '__main__':
-    model = Logistic()
+    model = MultiLogistic()
     model.__init__()
-    model.trainModel()
-    model.preData()
+    # model.trainModel()
+    # model.preData()
