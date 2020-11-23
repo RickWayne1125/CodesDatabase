@@ -36,6 +36,8 @@ class Logistic:
         loss = 0
         for i in range(self.num):
             temp = np.dot(self.beta.T, self.xt[i])
+            print(temp)
+            print(np.log(1 + pow(np.e, temp)))
             loss += -self.yr[i] * temp + np.log(1 + pow(np.e, temp))
         return loss
 
