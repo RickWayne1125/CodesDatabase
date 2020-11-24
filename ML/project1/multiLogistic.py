@@ -24,22 +24,28 @@ class MultiLogistic:
             self.b.append(b1)
             self.beta.append(beta1)
         # First learner
-        self.xr, self.yr = self.readData('Iris-setosa')
-        self.num = len(self.yr)  # 数据条数
-        self.xt = np.column_stack((self.xr, np.ones((self.num, 1))))
-        self.trainModel(0)
+        self.X, self.yt = self.readData('Iris-setosa')
+        self.num = len(self.yt)  # 数据条数
+        self.xt = np.column_stack((self.X, np.ones((self.num, 1))))
+        print('\nTraining Iris-setosa OvR Learner: ')
+        # self.trainModel(0)
 
         # Second learner
-        self.xr, self.yr = self.readData('Iris-versicolor')
-        self.num = len(self.yr)  # 数据条数
-        self.xt = np.column_stack((self.xr, np.ones((self.num, 1))))
-        self.trainModel(1)
+        self.X, self.yt = self.readData('Iris-versicolor')
+        self.num = len(self.yt)  # 数据条数
+        self.xt = np.column_stack((self.X, np.ones((self.num, 1))))
+        print('\nTraining Iris-versicolor OvR Learner: ')
+        # self.trainModel(1)
 
         # Third learner
-        self.xr, self.yr = self.readData('Iris-virginica')
-        self.num = len(self.yr)  # 数据条数
-        self.xt = np.column_stack((self.xr, np.ones((self.num, 1))))
-        self.trainModel(2)
+        self.X, self.yt = self.readData('Iris-virginica')
+        self.num = len(self.yt)  # 数据条数
+        self.xt = np.column_stack((self.X, np.ones((self.num, 1))))
+        print('\nTraining Iris-virginica OvR Learner: ')
+        # self.trainModel(2)
+
+        # Test Data
+        self.preData()
 
     def cutData(self):
         data = pd.read_csv('../data/Iris.csv')
@@ -60,46 +66,51 @@ class MultiLogistic:
         self.raw_data1 = np.array(self.raw_data1)
         self.raw_data2 = np.array(self.raw_data2)
         self.raw_data3 = np.array(self.raw_data3)
+        n=int(2*self.raw_data1.shape[0]/3)
+        self.train_data1=self.raw_data1[:n,:]
+        self.test_data1=self.raw_data1[n:,:]
+        n = 2 * self.raw_data2.shape[0]
+        self.train_data2 = self.raw_data2[:n, :]
+        self.test_data2 = self.raw_data2[n:, :]
+        n = 2 * self.raw_data3.shape[0]
+        self.train_data3 = self.raw_data3[:n, :]
+        self.test_data3 = self.raw_data3[n:, :]
+        print(self.test_data1.shape[0])
+        print(self.test_data1)
 
     def readData(self, name):
         if name == 'Iris-setosa':
-            raw1 = self.raw_data1
-            # label = 1
-            raw2 = np.row_stack((self.raw_data2, self.raw_data3))
-            # label = 0
+            raw1 = self.train_data1
+            raw2 = np.row_stack((self.train_data2, self.train_data3))
         elif name == 'Iris-versicolor':
-            raw1 = self.raw_data2
-            # label = 1
-            raw2 = np.row_stack((self.raw_data1, self.raw_data3))
-            # label = 0
+            raw1 = self.train_data2
+            raw2 = np.row_stack((self.train_data1, self.train_data3))
         elif name == 'Iris-virginica':
-            raw1 = self.raw_data3
-            # label = 1
-            raw2 = np.row_stack((self.raw_data1, self.raw_data2))
-            # label = 0
+            raw1 = self.train_data3
+            raw2 = np.row_stack((self.train_data1, self.train_data2))
         raw1[:, self.col] = 1
         raw2[:, self.col] = 0
         raw_data = np.row_stack((raw1, raw2))
-        rawx = raw_data[:, :len(raw_data[0]) - 1]
+        X = raw_data[:, :len(raw_data[0]) - 1]
         rawy = raw_data[:, len(raw_data[0]) - 1]
-        return rawx, rawy
+        return X, rawy
 
     def getLoss(self, no):
         loss = 0
         for i in range(self.num):
             temp = np.dot(self.beta[no].T, self.xt[i])
-            loss += -self.yr[i] * temp + np.log(np.asarray(1 + pow(np.e, temp), dtype=float))
+            loss += -self.yt[i] * temp + np.log(np.asarray(1 + pow(np.e, temp), dtype=float))
         return loss
 
     def gradDescent(self, no):
         dbeta = 0
         for i in range(self.num):
             temp = 1 + pow(np.e, np.dot(self.beta[no].T, self.xt[i]))
-            dbeta -= self.xt[i] * (self.yr[i] - 1 + 1 / temp)
+            dbeta -= self.xt[i] * (self.yt[i] - 1 + 1 / temp)
         dbeta = np.array(dbeta).reshape((self.col + 1, 1))
         self.beta[no] = self.beta[no] - self.eta * dbeta
 
-    def trainModel(self, no, epoch=5000, eta=0.001, eps=0.1):
+    def trainModel(self, no, epoch=3000, eta=0.001, eps=0.1):
         loss = []
         x = []
         self.eta = eta
@@ -115,26 +126,34 @@ class MultiLogistic:
         plt.show()
 
     def preData(self):
-        for i in range(self.num):
-            p = [0, 0, 0]
-            for no in range(2):
-                z = pow(np.e, np.dot(self.beta[no].T, self.xt[i]))
-                p[no] = z / (1 + z)
-            if (p[0] >= p[1] and p[0] >= p[2]):
-                pre = 'Iris-setosa'
-                n = 0
-            elif (p[1] >= p[0] and p[1] >= p[2]):
-                pre = 'Iris-versicolor'
-                n = 1
-            elif (p[2] >= p[0] and p[2] >= p[1]):
-                pre = 'Iris-virginica'
-                n = 2
-            print('pre = ', pre, ', real = ', self.yr[i],", posilibity of 1 = ",p[n])
+        print('\nPredicting Test Data:')
+        for i in range(self.test_data1.shape[0]):
+            testdata=self.test_data1[i]
+            self.testData(i,testdata)
+        for i in range(self.test_data2.shape[0]):
+            testdata=self.test_data1[i]
+            self.testData(i,testdata)
+        for i in range(self.test_data3.shape[0]):
+            testdata=self.test_data1[i]
+            self.testData(i,testdata)
 
+    def testData(self,i,testdata):
+        p = [0, 0, 0]
+        for no in range(2):
+            z = pow(np.e, np.dot(self.beta[no].T, np.column_stack((testdata[:4], np.ones(1)))))
+            p[no] = z / (1 + z)
+        if (p[0] >= p[1] and p[0] >= p[2]):
+            pre = 'Iris-setosa'
+            n = 0
+        elif (p[1] >= p[0] and p[1] >= p[2]):
+            pre = 'Iris-versicolor'
+            n = 1
+        elif (p[2] >= p[0] and p[2] >= p[1]):
+            pre = 'Iris-virginica'
+            n = 2
+        print('pre = ', pre, ', real = ', testdata[4], ", posilibity = ", p[n])
 
 if __name__ == '__main__':
     model = MultiLogistic()
-    model.__init__()
-    model.preData()
     # model.trainModel()
     # model.preData()
