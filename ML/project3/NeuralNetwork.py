@@ -10,5 +10,5 @@ class Neuron:
 
     def activeFunction(self):
         if self.act_method == 'Sigmoid':
-            
+
     def forwardCal(self, input):
