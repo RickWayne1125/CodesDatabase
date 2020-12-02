@@ -17,31 +17,9 @@ class node:
         self.max = max  # 多数表决时使用的标签值
         self.nh = nh  # 经验熵，用于剪枝
 
-class dataReader:
-    def __init__(self,data):
-        self.xr=data.data
-        self.yr=data.target
-        permutation = np.random.permutation(self.xr.shape[0])
-        shuffled_dataset = self.xr[permutation, :]
-        shuffled_labels = self.yr[permutation]
-        tlen = int(len(shuffled_labels) * 2 / 3)
-        # print('Size of Test Datasets:', tlen)
-        dlen = len(shuffled_labels)
-        self.train_x = shuffled_dataset[:tlen, :]
-        self.train_y = shuffled_labels[:tlen]
-        self.test_x = shuffled_dataset[tlen:dlen, :]
-        self.test_y = shuffled_labels[tlen:dlen]
-
-
 
 class Model:
     def __init__(self, x, y):
-        # self.xr = []
-        # self.yr = []
-        # self.xtrain = []
-        # self.ytrain = []
-        # self.xtest = []
-        # self.ytest = []
         self.root = self.buildTree(x, y)
 
     def getMost(self, y):
@@ -129,6 +107,8 @@ class Model:
         if root.left.leaf == 1 and root.right.leaf == 1:
             bef = (root.left.nh + alpha) + (root.right.nh + alpha)
             aft = root.nh + alpha
+            print('NH bef:', bef)
+            print('NH aft:', aft)
             if bef >= aft:
                 root.left = None
                 root.right = None
@@ -147,13 +127,53 @@ class Model:
             return self.classify(input, next)
 
 
+class DataReader:
+    def __init__(self):
+        self.rawx = None
+        self.rawy = None
+        self.trainx = None
+        self.testx = None
+        self.trainy = None
+        self.testy = None
+
+    def load_iris(self):
+        data = sklearn.datasets.load_iris()
+        self.rawx = data.data
+        self.rawy = data.target
+        self.splitData()
+
+    def load_haberman(self):
+        data = pd.read_csv('../data/haberman.txt')
+        data = np.array(data)
+        self.rawx = data[:, :3]
+        self.rawy = data[:, 3]
+        self.splitData()
+
+    def splitData(self):
+        permutation = np.random.permutation(self.rawx.shape[0])
+        shuffled_dataset = self.rawx[permutation, :]
+        shuffled_labels = self.rawy[permutation]
+        tlen = int(len(shuffled_labels) * 2 / 3)
+        # print('Size of Test Datasets:', tlen)
+        dlen = len(shuffled_labels)
+        self.trainx = shuffled_dataset[:tlen, :]
+        self.trainy = shuffled_labels[:tlen]
+        self.testx = shuffled_dataset[tlen:dlen, :]
+        self.testy = shuffled_labels[tlen:dlen]
+
+    def getTrainData(self):
+        return self.trainx, self.trainy
+
+    def getTestData(self):
+        return self.testx, self.testy
+
+
 if __name__ == '__main__':
-    data = sklearn.datasets.load_iris()
-    raw_data = dataReader(data)
-    train_data = raw_data.train_x
-    train_label = raw_data.train_y
-    test_data = raw_data.test_x
-    test_label = raw_data.test_y
+    dr = DataReader()
+    dr.load_haberman()
+    # dr.load_iris()
+    train_data, train_label = dr.getTrainData()
+    test_data, test_label = dr.getTestData()
     model = Model(train_data, train_label)
     true_count = 0
     for i in range(len(test_label)):
@@ -164,7 +184,7 @@ if __name__ == '__main__':
     print("Before Pruning Accuracy: ", (true_count / len(test_data)))
     true_count = 0
     root = model.root
-    model.postPruning(root, alpha=4)
+    model.postPruning(root, alpha=5)
     for i in range(len(test_label)):
         predict = model.classify(test_data[i], root)
         print('Prediction: ', predict, 'Real: ', test_label[i])

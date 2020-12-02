@@ -7,7 +7,7 @@ import sklearn.datasets
 
 
 class node:
-    def __init__(self, v=None, l=None, r=None, d=0, label=None, max=None, leaf=0, nh=0, mse=99999):
+    def __init__(self, v=None, l=None, r=None, d=0, label=None, max=None, leaf=0, nh=0, mse=0):
         self.value = v  # 分类参考值
         self.left = l  # 左子节点
         self.right = r  # 右子节点
@@ -42,43 +42,6 @@ class Model:
         # self.xtest = []
         # self.ytest = []
         self.root = self.buildTree(x, y)
-
-    def getMost(self, y):
-        labels = collections.Counter(y).most_common(1)
-        return labels[0][0]
-
-    def getEntropy(self, y):
-        ent = 0
-        if y.size > 1:
-            cate = list(set(y))
-        else:
-            cate = [y.item()]
-            y = [y.item()]
-        for i in cate:
-            temp = len([j for j in y if j == i]) / len(y)
-            ent -= temp * math.log(temp, 2)
-        return ent
-
-    def getGainEnt(self, x, y, d):
-        gain = 0
-        value = 0
-        ent = self.getEntropy(y)
-        attr = x[:, d]
-        attr = list(set(attr))
-        attr = sorted(attr)
-        anum = len(attr)
-        dnum = len(x[:, d])
-        for i in range(anum - 1):
-            tmpv = (attr[i] + attr[i + 1]) / 2
-            l = [j for j in range(dnum) if x[j, d] <= tmpv]
-            r = [j for j in range(dnum) if x[j, d] > tmpv]
-            yl = y[l]
-            yr = y[r]
-            tmpg = ent - (len(yl) / len(y)) * self.getEntropy(yl) - (len(yr) / len(y)) * self.getEntropy(yr)
-            if tmpg > gain:
-                value = tmpv
-                gain = tmpg
-        return gain, value
 
     def getAVG(self, y):
         total = 0
@@ -140,7 +103,7 @@ class Model:
 
     def buildTree(self, x, y):
         print('Building Tree...')
-        if y.size > 2:
+        if y.size > 3:
             mse, value, d = self.getAttr(x, y)
             # print('mse:', mse)
             # print('value:', value)
@@ -154,7 +117,8 @@ class Model:
                 return node(label=y[0], leaf=1)
         else:
             label = self.getAVG(y)
-            return node(label=label, leaf=1)
+            mse = self.getMSE(y)
+            return node(label=label, leaf=1, mse=mse)
 
     def postPruning(self, root, alpha):
         if root.leaf == 0:
@@ -194,9 +158,11 @@ class Model:
         avg = self.getAVG(real)
         SSE = 0
         SST = 0
+        SSR = 0
         for i in range(len(real)):
             SSE += (pre[i] - real[i]) ** 2
             SST += (real[i] - avg) ** 2
+            SSR += (pre[i] - avg) ** 2
         R2 = 1 - SSE / SST
         return R2
 
