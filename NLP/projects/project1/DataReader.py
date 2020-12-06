@@ -12,27 +12,27 @@ class DataReader:
                 line = re.sub(r'\n', '', line)
                 self.raw_data.append(line)
                 text = line[28:]
-                text = re.sub(r'[\w]*_!_', '', text)
-                text = re.sub(r'_!_', '', text)
-                text = re.sub(r'\s', '', text)
-                self.data.append(text)
-        with open(pinyin_path,'r',encoding='GBK') as f:
+                # text = re.sub(r'[\w]*_!_', '', text)
+                # text = re.sub(r'_!_', '', text)
+                # text = re.sub(r'\s', '', text)
+                text = re.findall('.*?([\u4E00-\u9FA5]+).*?', text)
+                self.data.extend(text)
+        with open(pinyin_path, 'r', encoding='GBK') as f:
             lines = f.readlines()
             for line in lines:
-                tmp = line.split( )
+                tmp = line.split()
                 length = len(tmp[0])
                 for i in range(length):
                     tempword = tmp[i + 1][0:len(tmp[i + 1]) - 1]
-                    if(self.pinyin.__contains__(tmp[0][i])):
-                        if(self.pinyin[tmp[0][i]].__contains__(tempword)):
-                            self.pinyin[tmp[0][i]][tempword]+=1
+                    if (self.pinyin.__contains__(tmp[0][i])):
+                        if (self.pinyin[tmp[0][i]].__contains__(tempword)):
+                            self.pinyin[tmp[0][i]][tempword] += 1
                         else:
                             self.pinyin[tmp[0][i]].setdefault(tempword, 1)
                     else:
                         tempdict = {}
-                        tempdict.setdefault(tempword,1)
-                        self.pinyin.setdefault(tmp[0][i],tempdict)
-
+                        tempdict.setdefault(tempword, 1)
+                        self.pinyin.setdefault(tmp[0][i], tempdict)
 
     def getData(self):
         return self.data
@@ -42,7 +42,6 @@ class DataReader:
 
     def getPinyin(self):
         return self.pinyin
-
 
 # if __name__ == '__main__':
 #     dr = DataReader()
