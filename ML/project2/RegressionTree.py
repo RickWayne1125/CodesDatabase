@@ -17,22 +17,6 @@ class node:
         self.mse = mse
 
 
-class dataReader:
-    def __init__(self, data):
-        self.xr = data.data
-        self.yr = data.target
-        permutation = np.random.permutation(self.xr.shape[0])
-        shuffled_dataset = self.xr[permutation, :]
-        shuffled_labels = self.yr[permutation]
-        tlen = int(len(shuffled_labels) * 2 / 3)
-        # print('Size of Test Datasets:', tlen)
-        dlen = len(shuffled_labels)
-        self.train_x = shuffled_dataset[:tlen, :]
-        self.train_y = shuffled_labels[:tlen]
-        self.test_x = shuffled_dataset[tlen:dlen, :]
-        self.test_y = shuffled_labels[tlen:dlen]
-
-
 class Model:
     def __init__(self, x, y):
         # self.xr = []
@@ -53,6 +37,8 @@ class Model:
 
     def getMSE(self, y):
         mse = 0
+        if(len(y)==0):
+            return mse
         avg = self.getAVG(y)
         for i in range(len(y)):
             mse += (y[i] - avg) * (y[i] - avg)
@@ -62,7 +48,7 @@ class Model:
         mse = -1
         value = 0
         attr = x[:, d]
-        attr = list(set(attr))
+        # attr = list(set(attr))
         attr = sorted(attr)
         anum = len(attr)
         dnum = len(x[:, d])
@@ -103,12 +89,12 @@ class Model:
 
     def buildTree(self, x, y):
         print('Building Tree...')
-        if y.size > 3:
+        if y.size > 1:
             mse, value, d = self.getAttr(x, y)
             # print('mse:', mse)
             # print('value:', value)
             # print('d', d)
-            if mse > 0:
+            if mse >= 0:
                 xl, yl, xr, yr = self.divideTree(x, y, value, d)
                 ltree = self.buildTree(xl, yl)
                 rtree = self.buildTree(xr, yr)
@@ -167,13 +153,53 @@ class Model:
         return R2
 
 
+class DataReader:
+    def __init__(self):
+        self.rawx = None
+        self.rawy = None
+        self.trainx = None
+        self.testx = None
+        self.trainy = None
+        self.testy = None
+
+    def load_boston(self):
+        data = sklearn.datasets.load_boston()
+        self.rawx = data.data
+        self.rawy = data.target
+        self.splitData()
+
+    def load_slump(self):
+        data = pd.read_csv('../data/slump_test.csv')
+        data = np.array(data)
+        self.rawx=data[:,1:10]
+        self.rawy=data[:,10]
+        self.splitData()
+
+    def splitData(self):
+        permutation = np.random.permutation(self.rawx.shape[0])
+        shuffled_dataset = self.rawx[permutation, :]
+        shuffled_labels = self.rawy[permutation]
+        tlen = int(len(shuffled_labels) * 2 / 3)
+        # print('Size of Test Datasets:', tlen)
+        dlen = len(shuffled_labels)
+        self.trainx = shuffled_dataset[:tlen, :]
+        self.trainy = shuffled_labels[:tlen]
+        self.testx = shuffled_dataset[tlen:dlen, :]
+        self.testy = shuffled_labels[tlen:dlen]
+
+    def getTrainData(self):
+        return self.trainx, self.trainy
+
+    def getTestData(self):
+        return self.testx, self.testy
+
+
 if __name__ == '__main__':
-    data = sklearn.datasets.load_boston()
-    raw_data = dataReader(data)
-    train_data = raw_data.train_x
-    train_label = raw_data.train_y
-    test_data = raw_data.test_x
-    test_label = raw_data.test_y
+    dr = DataReader()
+    dr.load_slump()
+    # dr.load_boston()
+    train_data, train_label = dr.getTrainData()
+    test_data, test_label = dr.getTestData()
     model = Model(train_data, train_label)
 
     true_count = 0
@@ -186,7 +212,7 @@ if __name__ == '__main__':
     print('R2:', model.getR2(pre, test_label))
 
     root = model.root
-    model.postPruning(root, 0.5)
+    model.postPruning(root, 2)
     pre = []
     for i in range(len(test_label)):
         predict = model.regression(test_data[i], root)

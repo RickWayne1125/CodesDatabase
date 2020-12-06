@@ -2,10 +2,11 @@ import re
 
 
 class DataReader:
-    def __init__(self, path='../data/toutiao_cat_data.txt'):
+    def __init__(self, data_path='../data/toutiao_cat_data.txt', pinyin_path='../data/lexicon.txt'):
         self.raw_data = []
         self.data = []
-        with open(path, 'r', encoding='utf-8') as f:
+        self.pinyin = {}
+        with open(data_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
             for line in lines:
                 line = re.sub(r'\n', '', line)
@@ -15,6 +16,23 @@ class DataReader:
                 text = re.sub(r'_!_', '', text)
                 text = re.sub(r'\s', '', text)
                 self.data.append(text)
+        with open(pinyin_path,'r',encoding='GBK') as f:
+            lines = f.readlines()
+            for line in lines:
+                tmp = line.split( )
+                length = len(tmp[0])
+                for i in range(length):
+                    tempword = tmp[i + 1][0:len(tmp[i + 1]) - 1]
+                    if(self.pinyin.__contains__(tmp[0][i])):
+                        if(self.pinyin[tmp[0][i]].__contains__(tempword)):
+                            self.pinyin[tmp[0][i]][tempword]+=1
+                        else:
+                            self.pinyin[tmp[0][i]].setdefault(tempword, 1)
+                    else:
+                        tempdict = {}
+                        tempdict.setdefault(tempword,1)
+                        self.pinyin.setdefault(tmp[0][i],tempdict)
+
 
     def getData(self):
         return self.data
@@ -22,6 +40,9 @@ class DataReader:
     def getRawData(self):
         return self.raw_data
 
+    def getPinyin(self):
+        return self.pinyin
 
-if __name__ == '__main__':
-    dr = DataReader()
+
+# if __name__ == '__main__':
+#     dr = DataReader()

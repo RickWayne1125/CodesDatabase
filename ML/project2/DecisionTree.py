@@ -144,9 +144,27 @@ class DataReader:
 
     def load_haberman(self):
         data = pd.read_csv('../data/haberman.txt')
+        print(data)
         data = np.array(data)
         self.rawx = data[:, :3]
         self.rawy = data[:, 3]
+        self.splitData()
+
+    def load_watermelon(self):
+        data = pd.read_csv('../data/watermelon_3a.csv')
+        data = np.array(data)
+        self.rawx = data[:, 1:3]
+        self.rawy = data[:, 3]
+        self.splitData()
+
+    def load_wine(self):
+        data = pd.read_csv('../data/wine.txt', index_col=False)
+        print(data)
+        data = np.array(data)
+        self.rawx = data[:, 1:]
+        self.rawy = data[:, 0]
+        print(self.rawx)
+        print(self.rawy)
         self.splitData()
 
     def splitData(self):
@@ -170,7 +188,8 @@ class DataReader:
 
 if __name__ == '__main__':
     dr = DataReader()
-    dr.load_haberman()
+    dr.load_wine()
+    # dr.load_haberman()
     # dr.load_iris()
     train_data, train_label = dr.getTrainData()
     test_data, test_label = dr.getTestData()
@@ -184,7 +203,7 @@ if __name__ == '__main__':
     print("Before Pruning Accuracy: ", (true_count / len(test_data)))
     true_count = 0
     root = model.root
-    model.postPruning(root, alpha=5)
+    model.postPruning(root, alpha=2)
     for i in range(len(test_label)):
         predict = model.classify(test_data[i], root)
         print('Prediction: ', predict, 'Real: ', test_label[i])
