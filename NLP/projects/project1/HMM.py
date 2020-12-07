@@ -10,16 +10,15 @@ class HMM:
         self.b = self.getB()
         self.a = self.getA()
         self.writeParameter()
-        # print(self.a)
-        # print(self.pi)
-        # print(self.b['色'])
-        # print(data)
-        # for key in pinyin:
-        #     print(key,pinyin[key])
 
     def getPi(self):
+        """
+        统计初始改率，即各汉字作为句首的概率
+        :return: 初始概率矩阵
+        """
         pi = {}
         data_size = len(self.data)
+        V = 0
         for line in self.data:
             if len(line) > 0:
                 temp_word = line[0]
@@ -27,11 +26,20 @@ class HMM:
                     pi[temp_word] += 1
                 else:
                     pi.setdefault(temp_word, 1)
+                    V += 1
         for word in pi:
-            pi[word] = pi[word] / data_size
+            # 加1平滑
+            res = (pi[word] + 1) / (data_size + V)
+            pi[word] = res
+        # 对于所有未在语料中作为句首出现的汉字，应用平滑后的默认概率
+        pi.setdefault('*', 1 / (data_size + V))
         return pi
 
     def getA(self):
+        """
+        统计转换概率，即当前汉字到下一汉字的概率
+        :return: 转换概率词典
+        """
         a = {}
         for line in self.data:
             for i in range(len(line) - 1):
@@ -49,10 +57,17 @@ class HMM:
             for next_word in a[word]:
                 total += a[word][next_word]
             for next_word in a[word]:
-                a[word][next_word] = a[word][next_word] / total
+                # 加1平滑
+                a[word][next_word] = (a[word][next_word] + 1) / (total + len(a[word]))
+            # 对于所有未在语料中出现的位于二元组第二位的汉字，应用平滑所得默认概率
+            a[word].setdefault('*', 1 / (total + len(a[word])))
         return a
 
     def getB(self):
+        """
+        统计各汉字对应各种拼音的概率
+        :return: 汉字-拼音概率词典
+        """
         b = {}
         for word in self.pinyin:
             dict = {}
@@ -65,6 +80,9 @@ class HMM:
         return b
 
     def writeParameter(self):
+        """
+        将计算所得参数写入本地文件存储
+        """
         # Write Pi in Pi.txt
         with open('Pi.txt', 'w', encoding='utf-8') as f:
             for i in self.pi:
