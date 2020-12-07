@@ -15,7 +15,8 @@ class DataReader:
                 # text = re.sub(r'[\w]*_!_', '', text)
                 # text = re.sub(r'_!_', '', text)
                 # text = re.sub(r'\s', '', text)
-                text = re.findall('.*?([\u4E00-\u9FA5]+).*?', text) # 通过正则表达式保留中文内容
+                # 通过正则表达式保留中文内容
+                text = re.findall('.*?([\u4E00-\u9FA5]+).*?', text)
                 self.data.extend(text)
         with open(pinyin_path, 'r', encoding='GBK') as f:
             lines = f.readlines()
