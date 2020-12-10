@@ -36,8 +36,6 @@ class Logistic:
         loss = 0
         for i in range(self.num):
             temp = np.dot(self.beta.T, self.xt[i])
-            print(temp)
-            print(np.log(1 + pow(np.e, temp)))
             loss += -self.yr[i] * temp + np.log(1 + pow(np.e, temp))
         return loss
 
@@ -49,7 +47,7 @@ class Logistic:
         dbeta = np.array(dbeta).reshape((self.col + 1, 1))
         self.beta = self.beta - self.eta * dbeta
 
-    def trainModel(self, epoch=60000, eta=0.001, eps=0.1):
+    def trainModel(self, epoch=50000, eta=0.001, eps=0.1):
         loss = []
         x = []
         self.eta = eta
