@@ -1,4 +1,5 @@
 import DataReader as DR
+import json
 
 
 class HMM:
@@ -9,7 +10,8 @@ class HMM:
         self.pi = self.getPi()
         self.b = self.getB()
         self.a = self.getA()
-        self.writeParameter()
+        # self.writeParameter()
+        self.writeJSON()
 
     def getPi(self):
         """
@@ -103,6 +105,17 @@ class HMM:
                 res += '\n'
                 f.write(res)
         print('Write Parameter Done.')
+
+    def writeJSON(self):
+        json_pi = json.dumps(self.pi)
+        json_a = json.dumps(self.a)
+        json_b = json.dumps(self.b)
+        with open('Pi.json', 'w', encoding='utf-8') as f:
+            f.write(json_pi)
+        with open('A.json', 'w', encoding='utf-8') as f:
+            f.write(json_a)
+        with open('B.json', 'w', encoding='utf-8') as f:
+            f.write(json_b)
 
 
 if __name__ == '__main__':
