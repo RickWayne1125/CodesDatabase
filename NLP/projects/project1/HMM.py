@@ -10,8 +10,9 @@ class HMM:
         self.pi = self.getPi()
         self.b = self.getB()
         self.a = self.getA()
-        # self.writeParameter()
+
         self.writeJSON()
+        self.writeParameter()
 
     def getPi(self):
         """
@@ -60,9 +61,10 @@ class HMM:
                 total += a[word][next_word]
             for next_word in a[word]:
                 # 加1平滑
-                a[word][next_word] = (a[word][next_word] + 1) / (total + len(a[word]) + 1)
+                a[word][next_word] = (a[word][next_word] + 1) / (total + len(a))
             # 对于所有未在语料中出现的位于二元组第二位的汉字，应用平滑所得默认概率
-            a[word].setdefault('*', 1 / (total + len(a[word]) + 1))
+            a[word].setdefault('*', 1 / (total + len(a)))
+            # a[word].setdefault('*', 0.00001)
         return a
 
     def getB(self):

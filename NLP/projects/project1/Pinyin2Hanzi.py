@@ -47,30 +47,28 @@ class Viterbi:
         path = []
         result = []
         for i in possible_hanzi:
-            flag = 0
+            flag = -1
             pmax = 0
             for j in range(len(self.psi)):
                 last_hanzi = self.psi[j][len(self.psi[j]) - 1]
-                p = self.getA(last_hanzi, i) * self.delta[j]
+                p = self.getA(last_hanzi, i) * self.delta[j] * self.b[i][pinyin]
+                # print('now path',self.psi[j],i,p)
                 if p > pmax:
                     pmax = p
                     flag = j
+            if (flag == -1 and pmax == 0):
+                flag = self.delta.index(max(self.delta))
+                pmax = self.delta[flag] * self.b[i][pinyin] * self.getA(self.psi[flag][len(self.psi[flag]) - 1], '*')
             temp = list(self.psi[flag])
             temp.append(i)
             path.append(temp)
             result.append(pmax)
         self.delta = result
         self.psi = path
-        # for j in self.psi:
-        #     last_node = j[len(j) - 1]
-        #     p = self.getA(last_node,i)*self.
-        #     if(p>pmax):
-        #         pmax=p
-        #         flag = j
 
     def flush(self):
-        self.psi=[]
-        self.delta=[]
+        self.psi = []
+        self.delta = []
 
     def findHanziByPinyin(self, pinyin):
         possible_hanzi = []
@@ -86,7 +84,8 @@ class Viterbi:
             if (self.a[hanzi1].__contains__(hanzi2)):
                 return self.a[hanzi1][hanzi2]
             else:
-                return self.a[hanzi1]['*']
+                return 0
+                # return self.a[hanzi1]['*']
         else:
             return 0
 
@@ -95,13 +94,13 @@ class Viterbi:
         return self.psi[index]
 
     def pinyin2Hanzi(self, pinyin):
-        model.getInput(pinyin)
-        model.flush()
-        model.getHead()
+        self.getInput(pinyin)
+        self.flush()
+        self.getHead()
         length = len(pinyin)
         for i in range(1, length):
-            model.getNext(i)
-        print(model.getHanzi())
+            self.getNext(i)
+        return self.getHanzi()
 
 
 def loadTestData(data_path):
@@ -119,11 +118,24 @@ def loadTestData(data_path):
     return pinyin, hanzi
 
 
+def getAccuracy(str1, str2):
+    if (len(str1) != len(str2)):
+        print('Something Wrong')
+        return 0
+    cnt = 0
+    for i in range(len(str1)):
+        if (str1[i] == str2[i]):
+            cnt += 1
+    return cnt / len(str1)
+
+
 if __name__ == '__main__':
     model = Viterbi()
     pinyin, hanzi = loadTestData('../data/测试集.txt')
-    print(pinyin)
-    print(hanzi)
     for i in range(len(pinyin)):
-        model.pinyin2Hanzi(pinyin[i])
-        print(hanzi[i])
+        test_sentence = hanzi[i].strip()
+        print('测试句:', test_sentence)
+        pre = ''.join(model.pinyin2Hanzi(pinyin[i]))
+        print('预测值:', pre)
+        print('准确率:', getAccuracy(test_sentence, pre))
+        print('====================')

@@ -24,7 +24,7 @@ class DataReader:
                 tmp = line.split()
                 length = len(tmp[0])
                 for i in range(length):
-                    tempword = tmp[i + 1][0:len(tmp[i + 1]) - 1]
+                    tempword = tmp[i + 1][0:len(tmp[i + 1])]
                     if (self.pinyin.__contains__(tmp[0][i])):
                         if (self.pinyin[tmp[0][i]].__contains__(tempword)):
                             self.pinyin[tmp[0][i]][tempword] += 1
