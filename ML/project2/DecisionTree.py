@@ -190,7 +190,7 @@ if __name__ == '__main__':
     dr = DataReader()
     dr.load_wine()
     # dr.load_haberman()
-    # dr.load_iris()
+    dr.load_iris()
     train_data, train_label = dr.getTrainData()
     test_data, test_label = dr.getTestData()
     model = Model(train_data, train_label)
