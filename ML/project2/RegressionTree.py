@@ -19,12 +19,6 @@ class node:
 
 class Model:
     def __init__(self, x, y):
-        # self.xr = []
-        # self.yr = []
-        # self.xtrain = []
-        # self.ytrain = []
-        # self.xtest = []
-        # self.ytest = []
         self.root = self.buildTree(x, y)
 
     def getAVG(self, y):
@@ -197,7 +191,7 @@ class DataReader:
 if __name__ == '__main__':
     dr = DataReader()
     dr.load_slump()
-    # dr.load_boston()
+    dr.load_boston()
     train_data, train_label = dr.getTrainData()
     test_data, test_label = dr.getTestData()
     model = Model(train_data, train_label)

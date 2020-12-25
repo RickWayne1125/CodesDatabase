@@ -23,10 +23,20 @@ class Model:
         self.root = self.buildTree(x, y)
 
     def getMost(self, y):
+        """
+        获取出现次数最多的标签，用于多数表决
+        :param y:
+        :return:
+        """
         labels = collections.Counter(y).most_common(1)
         return labels[0][0]
 
     def getEntropy(self, y):
+        """
+        计算信息熵
+        :param y:
+        :return: 信息熵
+        """
         ent = 0
         if y.size > 1:
             cate = list(set(y))
@@ -39,6 +49,13 @@ class Model:
         return ent
 
     def getGainEnt(self, x, y, d):
+        """
+        计算信息增益
+        :param x:
+        :param y:
+        :param d:
+        :return: 最大信息增益，分割阈值
+        """
         gain = 0
         value = 0
         ent = self.getEntropy(y)
@@ -48,6 +65,7 @@ class Model:
         anum = len(attr)
         dnum = len(x[:, d])
         for i in range(anum - 1):
+            # 遍历所有分割阈值可能的取值
             tmpv = (attr[i] + attr[i + 1]) / 2
             l = [j for j in range(dnum) if x[j, d] <= tmpv]
             r = [j for j in range(dnum) if x[j, d] > tmpv]
@@ -60,6 +78,12 @@ class Model:
         return gain, value
 
     def getAttr(self, x, y):
+        """
+        遍历所有属性所有可能阈值得到使得信息增益最大的参数
+        :param x:
+        :param y:
+        :return: 最大信息增益，分割阈值，属性下标
+        """
         gain = 0
         value = 0
         d = 0
@@ -72,6 +96,14 @@ class Model:
         return gain, value, d
 
     def divideTree(self, x, y, v, d):
+        """
+        通过选定属性以及阈值将当前树分割为左子树和右子树
+        :param x:
+        :param y:
+        :param v:
+        :param d:
+        :return: 左子树x集合&y集合，右子树x集合&y集合
+        """
         attr = x[:, d]
         num = len(x[:, d])
         l = [i for i in range(num) if x[i, d] <= v]
@@ -83,9 +115,16 @@ class Model:
         return xl, yl, xr, yr
 
     def buildTree(self, x, y):
+        """
+        建立分类树
+        :param x:
+        :param y:
+        :return:
+        """
         maxlabel = self.getMost(y)
         ent = self.getEntropy(y)
         nh = ent * len(y)
+        # 停止条件：只剩余一个数据/剩余集合中只剩余一类数据
         if y.size > 1:
             gain, value, d = self.getAttr(x, y)
             if gain > 0:
@@ -99,6 +138,12 @@ class Model:
             return node(label=y.item(), max=maxlabel, leaf=1, nh=nh)
 
     def postPruning(self, root, alpha):
+        """
+        通过经验熵进行后剪枝
+        :param root:
+        :param alpha: 参考值
+        :return:
+        """
         if root.leaf == 0:
             if root.left.leaf == 0:
                 self.postPruning(root.left, alpha)
@@ -116,6 +161,12 @@ class Model:
                 root.label = root.max
 
     def classify(self, input, root):
+        """
+        对给定输入数据进行分类
+        :param input:
+        :param root:
+        :return: 标签值
+        """
         if root.label != None:
             return root.label
         else:
@@ -128,6 +179,9 @@ class Model:
 
 
 class DataReader:
+    """
+    数据读取类
+    """
     def __init__(self):
         self.rawx = None
         self.rawy = None
@@ -190,7 +244,7 @@ if __name__ == '__main__':
     dr = DataReader()
     dr.load_wine()
     # dr.load_haberman()
-    dr.load_iris()
+    # dr.load_iris()
     train_data, train_label = dr.getTrainData()
     test_data, test_label = dr.getTestData()
     model = Model(train_data, train_label)
