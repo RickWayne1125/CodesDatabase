@@ -177,7 +177,7 @@ class BPNet:
         :return:
         """
         dr = DataReader()
-        dr.load_wine()
+        dr.load_iris()
         self.labels = list(set(dr.rawy))
         self.trainx, self.trainy = dr.getTrainData()
         self.testx, self.testy = dr.getTestData()
