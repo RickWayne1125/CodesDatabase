@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/mnt/c/Resources/github/toy_compiler/LexAnalysis.cpp
+bits/stdc++.h
+-
+project/tokens.h
+/mnt/c/Resources/github/toy_compiler/project/tokens.h
+
+/mnt/c/Resources/github/toy_compiler/main.cpp
+iostream
+-
+
+/mnt/c/Resources/github/toy_compiler/project/tokens.h
+

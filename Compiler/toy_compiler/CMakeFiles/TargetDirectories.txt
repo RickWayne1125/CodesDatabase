@@ -1,0 +1,3 @@
+/mnt/c/Resources/github/toy_compiler/CMakeFiles/rebuild_cache.dir
+/mnt/c/Resources/github/toy_compiler/CMakeFiles/toy_compiler.dir
+/mnt/c/Resources/github/toy_compiler/CMakeFiles/edit_cache.dir

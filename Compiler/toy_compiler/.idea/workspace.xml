@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="toy_compiler" targetName="toy_compiler" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1deae2a3-efe8-4769-a1dc-0dba1c070290" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ProjectId" id="1qumifKoKIoPWXVWlgme7xJoQjF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="CPPToolchains" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Resources\github\toy_compiler" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Resources\github\toy_compiler" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="toy_compiler" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="toy_compiler" TARGET_NAME="toy_compiler" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="toy_compiler" RUN_TARGET_NAME="toy_compiler">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1deae2a3-efe8-4769-a1dc-0dba1c070290" name="Default Changelist" comment="" />
+      <created>1617937977639</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1617937977639</updated>
+      <workItem from="1617937979029" duration="28538000" />
+      <workItem from="1618015667569" duration="10121000" />
+      <workItem from="1618465848383" duration="27000" />
+      <workItem from="1618466170845" duration="1667000" />
+      <workItem from="1618929403790" duration="681000" />
+      <workItem from="1618930572363" duration="1150000" />
+      <workItem from="1619184971096" duration="597000" />
+      <workItem from="1619418050490" duration="3455000" />
+      <workItem from="1619527694059" duration="4107000" />
+      <workItem from="1619599373443" duration="1783000" />
+      <workItem from="1620748922959" duration="487000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="720" y="361" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1617980114608">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state x="720" y="361" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1966.1106@0.0.1966.1106" timestamp="1617980114608" />
+    <state width="1166" height="303" key="GridCell.Tab.0.bottom" timestamp="1617962871969">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state width="1166" height="303" key="GridCell.Tab.0.bottom/0.0.1966.1106@0.0.1966.1106" timestamp="1617962871969" />
+    <state width="1166" height="303" key="GridCell.Tab.0.center" timestamp="1617962871969">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state width="1166" height="303" key="GridCell.Tab.0.center/0.0.1966.1106@0.0.1966.1106" timestamp="1617962871969" />
+    <state width="1166" height="303" key="GridCell.Tab.0.left" timestamp="1617962871969">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state width="1166" height="303" key="GridCell.Tab.0.left/0.0.1966.1106@0.0.1966.1106" timestamp="1617962871969" />
+    <state width="1166" height="303" key="GridCell.Tab.0.right" timestamp="1617962871969">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state width="1166" height="303" key="GridCell.Tab.0.right/0.0.1966.1106@0.0.1966.1106" timestamp="1617962871969" />
+    <state x="392" y="56" key="SettingsEditor" timestamp="1618466258084">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state x="294" y="42" key="SettingsEditor/0.0.1475.829@0.0.1475.829" timestamp="1617938316140" />
+    <state x="392" y="56" key="SettingsEditor/0.0.1966.1106@0.0.1966.1106" timestamp="1618466258084" />
+    <state x="992" y="282" width="736" height="548" key="find.popup" timestamp="1617954101337">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state x="992" y="282" width="736" height="548" key="find.popup/0.0.1966.1106@0.0.1966.1106" timestamp="1617954101337" />
+    <state x="646" y="242" width="672" height="678" key="search.everywhere.popup" timestamp="1617957769708">
+      <screen x="0" y="0" width="1966" height="1106" />
+    </state>
+    <state x="646" y="242" width="672" height="678" key="search.everywhere.popup/0.0.1966.1106@0.0.1966.1106" timestamp="1617957769708" />
+  </component>
+</project>
