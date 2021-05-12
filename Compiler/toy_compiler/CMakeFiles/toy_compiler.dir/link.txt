@@ -1,1 +1,1 @@
-/usr/bin/c++  -g   CMakeFiles/toy_compiler.dir/main.cpp.o CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o  -o toy_compiler 
+/usr/bin/c++  -g   CMakeFiles/toy_compiler.dir/main.cpp.o CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.o  -o toy_compiler 

@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/toy_compiler.dir/main.cpp.o"
   "CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o"
+  "CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.o"
   "toy_compiler.pdb"
   "toy_compiler"
 )

@@ -4,8 +4,9 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/mnt/c/Resources/github/toy_compiler/LexAnalysis.cpp" "/mnt/c/Resources/github/toy_compiler/CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o"
-  "/mnt/c/Resources/github/toy_compiler/main.cpp" "/mnt/c/Resources/github/toy_compiler/CMakeFiles/toy_compiler.dir/main.cpp.o"
+  "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/LexAnalysis.cpp" "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o"
+  "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/SyntaxAnalysis.cpp" "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.o"
+  "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/main.cpp" "/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles/toy_compiler.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

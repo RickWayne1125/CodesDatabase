@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/mnt/c/Resources/github/toy_compiler/LexAnalysis.cpp
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/LexAnalysis.cpp
 bits/stdc++.h
 -
 tokens.h
-/mnt/c/Resources/github/toy_compiler/tokens.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
 
-/mnt/c/Resources/github/toy_compiler/main.cpp
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/main.cpp
 iostream
 -
 
-/mnt/c/Resources/github/toy_compiler/tokens.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
 

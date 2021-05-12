@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Resources/github/toy_compiler
+CMAKE_SOURCE_DIR = /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/c/Resources/github/toy_compiler
+CMAKE_BINARY_DIR = /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Resources/github/toy_compiler/CMakeFiles /mnt/c/Resources/github/toy_compiler/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Resources/github/toy_compiler/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -150,6 +150,33 @@ LexAnalysis.cpp.s:
 	$(MAKE) -f CMakeFiles/toy_compiler.dir/build.make CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.s
 .PHONY : LexAnalysis.cpp.s
 
+SyntaxAnalysis.o: SyntaxAnalysis.cpp.o
+
+.PHONY : SyntaxAnalysis.o
+
+# target to build an object file
+SyntaxAnalysis.cpp.o:
+	$(MAKE) -f CMakeFiles/toy_compiler.dir/build.make CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.o
+.PHONY : SyntaxAnalysis.cpp.o
+
+SyntaxAnalysis.i: SyntaxAnalysis.cpp.i
+
+.PHONY : SyntaxAnalysis.i
+
+# target to preprocess a source file
+SyntaxAnalysis.cpp.i:
+	$(MAKE) -f CMakeFiles/toy_compiler.dir/build.make CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.i
+.PHONY : SyntaxAnalysis.cpp.i
+
+SyntaxAnalysis.s: SyntaxAnalysis.cpp.s
+
+.PHONY : SyntaxAnalysis.s
+
+# target to generate assembly for a file
+SyntaxAnalysis.cpp.s:
+	$(MAKE) -f CMakeFiles/toy_compiler.dir/build.make CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.s
+.PHONY : SyntaxAnalysis.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -184,11 +211,14 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... toy_compiler"
 	@echo "... edit_cache"
+	@echo "... toy_compiler"
 	@echo "... LexAnalysis.o"
 	@echo "... LexAnalysis.i"
 	@echo "... LexAnalysis.s"
+	@echo "... SyntaxAnalysis.o"
+	@echo "... SyntaxAnalysis.i"
+	@echo "... SyntaxAnalysis.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
