@@ -313,10 +313,10 @@ public:
     }
 };
 
-int main()
-{
-    char *file = "test.c";
-    LexAnalysis la(file);
-    la.analysis();
-    la.showResult();
-}
+//int main()
+//{
+//    char *file = "test.c";
+//    LexAnalysis la(file);
+//    la.analysis();
+//    la.showResult();
+//}

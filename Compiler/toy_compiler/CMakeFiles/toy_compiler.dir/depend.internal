@@ -3,6 +3,12 @@
 
 CMakeFiles/toy_compiler.dir/LexAnalysis.cpp.o
  /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/LexAnalysis.cpp
+ /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/node.h
+ /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
+CMakeFiles/toy_compiler.dir/SyntaxAnalysis.cpp.o
+ /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/SyntaxAnalysis.cpp
+ /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/node.h
+ /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/productions.h
  /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
 CMakeFiles/toy_compiler.dir/main.cpp.o
  /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/main.cpp

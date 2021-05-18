@@ -91,6 +91,9 @@
 		<Unit filename="/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/main.cpp">
 			<Option target="toy_compiler"/>
 		</Unit>
+		<Unit filename="/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/productions.h">
+			<Option target="toy_compiler"/>
+		</Unit>
 		<Unit filename="/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h">
 			<Option target="toy_compiler"/>
 		</Unit>

@@ -11,9 +11,31 @@ bits/stdc++.h
 -
 tokens.h
 /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
+node.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/node.h
+
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/SyntaxAnalysis.cpp
+bits/stdc++.h
+-
+tokens.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
+node.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/node.h
+productions.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/productions.h
 
 /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/main.cpp
 iostream
+-
+
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/node.h
+bits/stdc++.h
+-
+tokens.h
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
+
+/mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/productions.h
+bits/stdc++.h
 -
 
 /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler/tokens.h
