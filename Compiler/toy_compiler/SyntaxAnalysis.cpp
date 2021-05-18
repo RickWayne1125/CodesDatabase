@@ -4,6 +4,16 @@
 
 using namespace std;
 
+struct procedure
+{
+    char left;
+    string right;
+};
+
+string getFIRST(vector<procedure> pros){
+    
+}
+
 class AST
 {
 private:
