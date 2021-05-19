@@ -27,7 +27,8 @@ public:
     {
         token_list = tl;
         elements = e;
-        initProduction;
+        initProduction();
+        getFIRSTset();
     }
 
     void insertFIRST(string left, string cur_symbol)
@@ -104,14 +105,50 @@ public:
 
     void getFIRSTset()
     {
+        // 生成不同终结符在first_map中的对应位置
         for (auto iter : pros)
         {
+            string left = iter.first;
+            set<string> temp;
+            first_map.insert(pair<string, set<string>>(left, temp));
+        }
+        // 生成first集
+        for (auto iter : pros)
+        {
+            if (first_map[iter.first].size() == 0)
+            {
+                getFIRST(iter.first);
+            }
+        }
+    }
+    void show()
+    {
+        cout << "PRODUCTIONS:" << endl;
+        for (auto iter : pros)
+        {
+            for (auto iter1 : iter.second)
+            {
+                iter1.show();
+            }
+        }
+        cout << "FIRST SET" << endl;
+        for (auto iter : first_map)
+        {
+            cout << iter.first << ": ";
+            cout << "{ ";
+            for (auto iter1 : iter.second)
+            {
+                cout << iter1 << " ";
+            }
+            cout << "}" << endl;
         }
     }
 };
 
 int main()
 {
-    production p(DECLARE_INT);
-    p.show();
+    vector<string> tl;
+    vector<node> e;
+    LL1 l(tl,e);
+    l.show();
 }

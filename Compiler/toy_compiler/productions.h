@@ -7,11 +7,15 @@ set<string> NON_TERMINAL_LIST{"S", "A", "B", "C"};
 set<string> TERMINAL_LIST = {"none", "if", "+", "id", "-", "*", "/", "int"};
 
 // 产生式编码
-#define DECLARE_INT "S -> int A"
+#define PRO_DECLARE_INT "S -> int A"
+#define PRO_ADD "S -> A + A"
+#define PRO_A_END "A -> none"
 
 // 产生式列表
 vector<string> productions = {
-    DECLARE_INT
+    PRO_DECLARE_INT,
+    PRO_ADD,
+    PRO_A_END
 };
 
 // 分割函数
