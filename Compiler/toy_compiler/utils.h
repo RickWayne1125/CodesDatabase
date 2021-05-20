@@ -16,7 +16,11 @@ bool CompareMap(const std::map<K, V> &map1, const std::map<K, V> &map2)
         }
         else
         {
-            if (0 != memcmp(&it1.second, &it2->second, sizeof(V)))
+            // if (0 != memcmp(&it1.second, &it2->second, sizeof(V)))
+            // {
+            //     return false;
+            // }
+            if (it1.second.size() != it2->second.size())
             {
                 return false;
             }

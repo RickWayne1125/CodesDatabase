@@ -205,10 +205,11 @@ public:
                 temp.insert("$");
             follow_map.insert(pair<string, set<string>>(iter, temp));
         }
-        map<string, set<string>> comp = follow_map;
+        map<string, set<string>> comp;
         // 遍历产生式，求FOLLOW集，直到集合不再变化
         do
         {
+            comp = follow_map;
             for (auto iter : pros)
             {
                 for (auto iter1 : iter.second)
@@ -217,7 +218,18 @@ public:
                     getFOLLOW(p);
                 }
             }
-        } while (CompareMap(comp, follow_map));
+            cout << "FOLLOW SET" << endl;
+            for (auto iter : follow_map)
+            {
+                cout << iter.first << ": ";
+                cout << "{ ";
+                for (auto iter1 : iter.second)
+                {
+                    cout << iter1 << " ";
+                }
+                cout << "}" << endl;
+            }
+        } while (!(CompareMap(comp, follow_map)));
     }
 
     void show()
