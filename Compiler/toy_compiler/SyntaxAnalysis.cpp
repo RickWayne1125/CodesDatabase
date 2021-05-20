@@ -90,6 +90,7 @@ public:
 
     void insertFOLLOWbyFIRST(string b, string a)
     {
+        cout << "insert first of " << a << " to " << b << endl;
         // 将FIRST(a)-none放入FOLLOW(b)
         for (auto iter : first_map[a])
         {
@@ -101,6 +102,7 @@ public:
     }
     void insertFOLLOWbyFOLLOW(string b, string a)
     {
+        cout << "insert follow of " << a << " to " << b << endl;
         // 将FOLLOW(a)放入FOLLOW(b)
         for (auto iter : follow_map[a])
         {
@@ -117,8 +119,9 @@ public:
             if (NON_TERMINAL_LIST.find(cur_symbol) != NON_TERMINAL_LIST.end())
             {
                 // 当上一个符号可以指向空时，将FOLLOW(A)放入FOLLOW(B)
-                if (flag = 1)
+                if (flag == 1)
                 {
+                    cout<<flag<<endl;
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
                 flag = 0;
