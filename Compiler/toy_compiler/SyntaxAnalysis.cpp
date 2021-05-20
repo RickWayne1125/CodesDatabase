@@ -85,6 +85,13 @@ public:
         }
     }
 
+    void getFOLLOW(string left)
+    {
+        if (left == "S")
+        {
+        }
+    }
+
     void initProduction()
     {
         for (auto iter : productions)
@@ -105,14 +112,22 @@ public:
 
     void getFIRSTset()
     {
-        // 生成不同终结符在first_map中的对应位置
-        for (auto iter : pros)
+        // 生成非终结符在first_map中的对应位置
+        for (auto iter : NON_TERMINAL_LIST)
         {
-            string left = iter.first;
+            string left = iter;
             set<string> temp;
             first_map.insert(pair<string, set<string>>(left, temp));
         }
-        // 生成first集
+        // 生成终结符的FIRST集
+        for (auto iter : TERMINAL_LIST)
+        {
+            string left = iter;
+            set<string> temp;
+            temp.insert(left);
+            first_map.insert(pair<string, set<string>>(left, temp));
+        }
+        // 生成FIRST集
         for (auto iter : pros)
         {
             if (first_map[iter.first].size() == 0)
@@ -121,6 +136,15 @@ public:
             }
         }
     }
+
+    void getFOLLOWset()
+    {
+        for (auto iter : pros)
+        {
+            string left = iter.first;
+        }
+    }
+
     void show()
     {
         cout << "PRODUCTIONS:" << endl;
@@ -149,6 +173,6 @@ int main()
 {
     vector<string> tl;
     vector<node> e;
-    LL1 l(tl,e);
+    LL1 l(tl, e);
     l.show();
 }
