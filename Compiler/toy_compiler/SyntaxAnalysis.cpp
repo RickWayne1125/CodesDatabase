@@ -90,7 +90,7 @@ public:
 
     void insertFOLLOWbyFIRST(string b, string a)
     {
-        cout << "insert first of " << a << " to " << b << endl;
+        // cout << "insert first of " << a << " to " << b << endl;
         // 将FIRST(a)-none放入FOLLOW(b)
         for (auto iter : first_map[a])
         {
@@ -102,7 +102,7 @@ public:
     }
     void insertFOLLOWbyFOLLOW(string b, string a)
     {
-        cout << "insert follow of " << a << " to " << b << endl;
+        // cout << "insert follow of " << a << " to " << b << endl;
         // 将FOLLOW(a)放入FOLLOW(b)
         for (auto iter : follow_map[a])
         {
@@ -112,16 +112,15 @@ public:
 
     void getFOLLOW(production p)
     {
+        int flag = 0; // 表示后继符号是否可以指向空
         for (int i = p.right.size() - 1; i >= 0; i--)
         {
             string cur_symbol = p.right[i];
-            int flag = 0; // 表示后继符号是否可以指向空
             if (NON_TERMINAL_LIST.find(cur_symbol) != NON_TERMINAL_LIST.end())
             {
                 // 当上一个符号可以指向空时，将FOLLOW(A)放入FOLLOW(B)
                 if (flag == 1)
                 {
-                    cout<<flag<<endl;
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
                 flag = 0;
@@ -220,17 +219,6 @@ public:
                     production p = iter1;
                     getFOLLOW(p);
                 }
-            }
-            cout << "FOLLOW SET" << endl;
-            for (auto iter : follow_map)
-            {
-                cout << iter.first << ": ";
-                cout << "{ ";
-                for (auto iter1 : iter.second)
-                {
-                    cout << iter1 << " ";
-                }
-                cout << "}" << endl;
             }
         } while (!(CompareMap(comp, follow_map)));
     }
