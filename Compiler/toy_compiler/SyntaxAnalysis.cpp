@@ -2,6 +2,7 @@
 #include "tokens.h"
 #include "node.h"
 #include "productions.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -200,17 +201,23 @@ public:
         for (auto iter : NON_TERMINAL_LIST)
         {
             set<string> temp;
+            if (iter == "S")
+                temp.insert("$");
             follow_map.insert(pair<string, set<string>>(iter, temp));
         }
-        // 遍历产生式，求FOLLOW集
-        for (auto iter : pros)
+        map<string, set<string>> comp = follow_map;
+        // 遍历产生式，求FOLLOW集，直到集合不再变化
+        do
         {
-            for (auto iter1 : iter.second)
+            for (auto iter : pros)
             {
-                production p = iter1;
-                getFOLLOW(p);
+                for (auto iter1 : iter.second)
+                {
+                    production p = iter1;
+                    getFOLLOW(p);
+                }
             }
-        }
+        } while (CompareMap(comp, follow_map));
     }
 
     void show()
