@@ -85,11 +85,9 @@ public:
         }
     }
 
-    void getFOLLOW(string left)
+    void getFOLLOW(production p)
     {
-        if (left == "S")
-        {
-        }
+        
     }
 
     void initProduction()
@@ -110,7 +108,7 @@ public:
         }
     }
 
-    void getFIRSTset()
+    void getFIRSTset()  // 生成FIRST集的map
     {
         // 生成非终结符在first_map中的对应位置
         for (auto iter : NON_TERMINAL_LIST)
