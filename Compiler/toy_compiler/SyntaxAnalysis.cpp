@@ -29,6 +29,7 @@ public:
         elements = e;
         initProduction();
         getFIRSTset();
+        getFOLLOWset();
     }
 
     void insertFIRST(string left, string cur_symbol)
@@ -39,7 +40,8 @@ public:
         }
         for (auto iter : first_map[cur_symbol])
         {
-            first_map[left].insert(iter);
+            if (iter != "none")
+                first_map[left].insert(iter);
         }
     }
 
@@ -85,9 +87,66 @@ public:
         }
     }
 
+    void insertFOLLOWbyFIRST(string b, string a)
+    {
+        // 将FIRST(a)-none放入FOLLOW(b)
+        for (auto iter : first_map[a])
+        {
+            if (iter != "none")
+            {
+                follow_map[b].insert(iter);
+            }
+        }
+    }
+    void insertFOLLOWbyFOLLOW(string b, string a)
+    {
+        // 将FOLLOW(a)放入FOLLOW(b)
+        for (auto iter : follow_map[a])
+        {
+            follow_map[b].insert(iter);
+        }
+    }
+
     void getFOLLOW(production p)
     {
-        
+        for (int i = p.right.size() - 1; i >= 0; i--)
+        {
+            string cur_symbol = p.right[i];
+            int flag = 0; // 表示后继符号是否可以指向空
+            if (NON_TERMINAL_LIST.find(cur_symbol) != NON_TERMINAL_LIST.end())
+            {
+                // 当上一个符号可以指向空时，将FOLLOW(A)放入FOLLOW(B)
+                if (flag = 1)
+                {
+                    insertFOLLOWbyFOLLOW(cur_symbol, p.left);
+                }
+                flag = 0;
+                // 对于产生式最后一个非终结符B，将FOLLOW(A)放入FOLLOW(B)
+                if (i == p.right.size() - 1)
+                {
+                    insertFOLLOWbyFOLLOW(cur_symbol, p.left);
+                }
+                // 对于A->aBb的产生式，将FIRST(b)-none加入FOLLOW(B)
+                else
+                {
+                    insertFOLLOWbyFIRST(cur_symbol, p.right[i + 1]);
+                }
+                // 判断当前符号是否可以指向空
+                for (auto iter : pros[cur_symbol])
+                {
+                    if (iter.right[0] == "none")
+                    {
+                        flag = 1;
+                        break;
+                    }
+                }
+            }
+            else if (TERMINAL_LIST.find(cur_symbol) != TERMINAL_LIST.end())
+            {
+                // 终结符不能指向空
+                flag = 0;
+            }
+        }
     }
 
     void initProduction()
@@ -108,7 +167,7 @@ public:
         }
     }
 
-    void getFIRSTset()  // 生成FIRST集的map
+    void getFIRSTset() // 生成FIRST集的map
     {
         // 生成非终结符在first_map中的对应位置
         for (auto iter : NON_TERMINAL_LIST)
@@ -137,9 +196,20 @@ public:
 
     void getFOLLOWset()
     {
+        // 生成非终结符在follow_map中对应的位置
+        for (auto iter : NON_TERMINAL_LIST)
+        {
+            set<string> temp;
+            follow_map.insert(pair<string, set<string>>(iter, temp));
+        }
+        // 遍历产生式，求FOLLOW集
         for (auto iter : pros)
         {
-            string left = iter.first;
+            for (auto iter1 : iter.second)
+            {
+                production p = iter1;
+                getFOLLOW(p);
+            }
         }
     }
 
@@ -155,6 +225,17 @@ public:
         }
         cout << "FIRST SET" << endl;
         for (auto iter : first_map)
+        {
+            cout << iter.first << ": ";
+            cout << "{ ";
+            for (auto iter1 : iter.second)
+            {
+                cout << iter1 << " ";
+            }
+            cout << "}" << endl;
+        }
+        cout << "FOLLOW SET" << endl;
+        for (auto iter : follow_map)
         {
             cout << iter.first << ": ";
             cout << "{ ";
