@@ -23,9 +23,9 @@ private:
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack;    // 分析栈
-    vector<string> buffer; // 输入缓冲区
-
+    stack<string> ana_stack; // 分析栈
+    vector<string> buffer;   // 输入缓冲区
+    vector<string> error_list;  // 出现错误的输入串中的符号
 
 public:
     LL1(vector<string> tl, vector<node> e)
@@ -230,7 +230,7 @@ public:
         } while (!(CompareMap(comp, follow_map)));
     }
 
-    bool check()    // 检查是否符合文法规则
+    bool check() // 检查是否符合文法规则
     {
         // 是否不含左递归
         for (auto iter : pros)
@@ -244,11 +244,63 @@ public:
         // 终结符集是否两两不相交
     }
 
-    void analysis(){
+    void analysis()
+    {
         ana_stack.push("S");
-        // for()
+        for (auto e : elements)
+        {
+            string a = e.terminal;      // 输入符号a
+            string x = ana_stack.top(); // 栈顶符号x
+            try
+            {
+                if (isTERMINAL(x))
+                {
+                    if (x == a)
+                    {
+                        ana_stack.pop();
+                        continue;
+                    }
+                    else
+                    {
+                        throw("GrammerError");
+                    }
+                }
+                else if (isNON_TERMINAL(x))
+                {
+                    production p = pre_table[x][a];
+                    if (p.str != "")
+                    {
+                        ana_stack.pop();
+                        for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
+                        {
+                            ana_stack.push(*iter);
+                        }
+                    }
+                    else
+                    {
+                        throw("MatchError");
+                    }
+                }
+            }
+            catch (string exception)
+            {
+                if (exception == "GrammerError")
+                {
+                    cout << "ERROR: Grammer Error Occurs at Line " + to_string(e.line) + " ---- " + e.msg << endl;
+                }
+                else if (exception == "MatchError")
+                {
+                    cout << "ERROR: No Productions Could Match From " + x + " to " + a << endl;
+                }
+                error_list.push_back(a);
+                continue;
+            }
+            if (ana_stack.empty())
+            {
+                cout << "Syntax Analysis Succeed!" << endl;
+            }
+        }
     }
-
     void insertPredictTable(string n, string t, production p)
     {
         pre_table[n][t] = p;

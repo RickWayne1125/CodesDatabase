@@ -76,8 +76,9 @@ public:
                 index++;
                 continue;
             }
-            else if (temp == '\r')
+            else if (temp == '\n' || temp == '\r')
             {
+                cout << "huanhang" << endl;
                 index += 2;
                 cur_line++;
                 continue;
@@ -313,10 +314,10 @@ public:
     }
 };
 
-//int main()
-//{
-//    char *file = "test.c";
-//    LexAnalysis la(file);
-//    la.analysis();
-//    la.showResult();
-//}
+// int main()
+// {
+//     char *file = "test.c";
+//     LexAnalysis la(file);
+//     la.analysis();
+//     la.showResult();
+// }
