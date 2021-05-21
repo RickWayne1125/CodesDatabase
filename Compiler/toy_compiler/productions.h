@@ -3,8 +3,8 @@
 //
 #include <bits/stdc++.h>
 // 终结符表与非终结符表
-set<string> NON_TERMINAL_LIST{"S", "A", "B", "C", "E", "T","T1","F"};
-set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "-", "*", "/", "int","(",")"};
+set<string> NON_TERMINAL_LIST{"S", "E", "T", "T1", "F"};
+set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "-", "*", "/", "int", "(", ")"};
 
 // 产生式编码
 #define TEST1 "S -> T E"
@@ -32,7 +32,7 @@ vector<string> productions = {
     // PRO_DECLARE_INT,
     // PRO_ADD,
     // PRO_A_END,
-    };
+};
 
 // 分割函数
 vector<string> split(const string &str, const string &delim)
@@ -59,24 +59,33 @@ struct production
 {
     string left;          // 产生式左侧
     vector<string> right; // 产生式右侧
+    string str;
+    production()
+    {
+        left = "";
+        str = "";
+    }
     production(string pro)
     {
         vector<string> sp_r = split(pro, " ");
         left = sp_r[0];
+        str = left + " ->";
         for (int i = 2; i < sp_r.size(); i++)
         {
             right.push_back(sp_r[i]);
+            str += " " + sp_r[i];
         }
     }
 
     void show()
     {
         std::cout << "Production: ";
-        std::cout << left << " -> ";
-        for (int i = 0; i < right.size(); i++)
-        {
-            std::cout << right[i] << ' ';
-        }
+        std::cout << str;
+        // std::cout << left << " -> ";
+        // for (int i = 0; i < right.size(); i++)
+        // {
+        //     std::cout << right[i] << ' ';
+        // }
         std::cout << endl;
     }
 };

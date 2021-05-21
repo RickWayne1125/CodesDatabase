@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 #include "tokens.h"
 #include "node.h"
-#include "productions.h"
+// #include "productions.h"
 #include "utils.h"
 
 using namespace std;
@@ -23,6 +23,8 @@ private:
     map<string, set<string>> first_map;
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
+    map<string, map<string, production>> pre_table;
+
 public:
     LL1(vector<string> tl, vector<node> e)
     {
@@ -31,6 +33,8 @@ public:
         initProduction();
         getFIRSTset();
         getFOLLOWset();
+        getPredictTable();
+        show();
     }
 
     void insertFIRST(string left, string cur_symbol)
@@ -53,11 +57,11 @@ public:
         {
             string cur_symbol = pro[i].right[0]; // 产生式右侧第一个符号
             // 若该符号为终结符
-            if (TERMINAL_LIST.find(cur_symbol) != TERMINAL_LIST.end())
+            if (isTERMINAL(cur_symbol))
             {
                 first_map[left].insert(cur_symbol);
             }
-            else if (NON_TERMINAL_LIST.find(cur_symbol) != NON_TERMINAL_LIST.end())
+            else if (isNON_TERMINAL(cur_symbol))
             {
                 insertFIRST(left, cur_symbol);
                 for (size_t j = 0; j < pro[i].right.size(); j++)
@@ -116,7 +120,7 @@ public:
         for (int i = p.right.size() - 1; i >= 0; i--)
         {
             string cur_symbol = p.right[i];
-            if (NON_TERMINAL_LIST.find(cur_symbol) != NON_TERMINAL_LIST.end())
+            if (isNON_TERMINAL(cur_symbol))
             {
                 // 当上一个符号可以指向空时，将FOLLOW(A)放入FOLLOW(B)
                 if (flag == 1)
@@ -144,7 +148,7 @@ public:
                     }
                 }
             }
-            else if (TERMINAL_LIST.find(cur_symbol) != TERMINAL_LIST.end())
+            else if (isTERMINAL(cur_symbol))
             {
                 // 终结符不能指向空
                 flag = 0;
@@ -223,6 +227,70 @@ public:
         } while (!(CompareMap(comp, follow_map)));
     }
 
+    // 检查是否符合文法规则
+    bool check()
+    {
+        // 是否不含左递归
+        for (auto iter : pros)
+        {
+            for (auto p : iter.second)
+            {
+                if (p.left == p.right[0])
+                    return false;
+            }
+        }
+        // 终结符集是否两两不相交
+    }
+
+    void insertPredictTable(string n, string t, production p)
+    {
+        pre_table[n][t] = p;
+    }
+
+    void getPredictTable()
+    {
+        // 初始化预测分析表
+        for (auto non_terminal : NON_TERMINAL_LIST)
+        {
+
+            map<string, production> t_p;
+            for (auto terminal : TERMINAL_LIST)
+            {
+                production p;
+                t_p.insert(pair<string, production>(terminal, p));
+            }
+            pre_table.insert(pair<string, map<string, production>>(non_terminal, t_p));
+        }
+        // 构建预测分析表
+        for (auto iter : pros)
+        {
+            for (auto p : iter.second)
+            {
+                if (isTERMINAL(p.right[0]))
+                {
+                    if (p.right[0] != "none")
+                        insertPredictTable(p.left, p.right[0], p);
+                    else
+                    {
+                        // 遍历左部FOLLOW集
+                        for (auto follow : follow_map[p.left])
+                        {
+                            insertPredictTable(p.left, follow, p);
+                        }
+                    }
+                }
+                else if (isNON_TERMINAL(p.right[0]))
+                {
+                    // 遍历首部非终结符FIRST集
+                    for (auto first : first_map[p.right[0]])
+                    {
+                        insertPredictTable(p.left, first, p);
+                    }
+                }
+            }
+        }
+    }
+
     void show()
     {
         cout << "PRODUCTIONS:" << endl;
@@ -255,6 +323,45 @@ public:
             }
             cout << "}" << endl;
         }
+        // 输出预测分析表
+        // 列数&行数
+        int row = NON_TERMINAL_LIST.size();
+        int col = TERMINAL_LIST.size() + 1;
+        // 构造表头
+        vector<string> D;
+        D.push_back(" ");
+        for (auto iter : TERMINAL_LIST)
+        {
+            D.push_back(iter);
+        }
+        // 构造列头
+        vector<string> R;
+        for (auto iter : NON_TERMINAL_LIST)
+        {
+            R.push_back(iter);
+        }
+        // 构造最大列宽
+        vector<int> max;
+        for (int i = 0; i < col; i++)
+        {
+            max.push_back(13);
+        }
+        // 构造表数据
+        vector<vector<string>> Str;
+        for (int i = 0; i < row; i++)
+        {
+            vector<string> temp;
+            string n = R[i]; // 非终结符
+            temp.push_back(n);
+            for (int j = 1; j < col; j++)
+            {
+                string t = D[j]; // 终结符
+                temp.push_back(pre_table[n][t].str);
+            }
+            Str.push_back(temp);
+        }
+        // 绘制预测分析表
+        Draw_Datas(max, Str, D, col, row);
     }
 };
 
@@ -263,5 +370,4 @@ int main()
     vector<string> tl;
     vector<node> e;
     LL1 l(tl, e);
-    l.show();
 }
