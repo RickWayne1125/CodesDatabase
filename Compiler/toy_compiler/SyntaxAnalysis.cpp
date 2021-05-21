@@ -19,11 +19,13 @@ class LL1
 private:
     vector<string> token_list;
     vector<node> elements;
-    stack<node> ana_stack;
     map<string, set<string>> first_map;
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
+    stack<string> ana_stack;    // 分析栈
+    vector<string> buffer; // 输入缓冲区
+
 
 public:
     LL1(vector<string> tl, vector<node> e)
@@ -104,6 +106,7 @@ public:
             }
         }
     }
+
     void insertFOLLOWbyFOLLOW(string b, string a)
     {
         // cout << "insert follow of " << a << " to " << b << endl;
@@ -227,8 +230,7 @@ public:
         } while (!(CompareMap(comp, follow_map)));
     }
 
-    // 检查是否符合文法规则
-    bool check()
+    bool check()    // 检查是否符合文法规则
     {
         // 是否不含左递归
         for (auto iter : pros)
@@ -240,6 +242,11 @@ public:
             }
         }
         // 终结符集是否两两不相交
+    }
+
+    void analysis(){
+        ana_stack.push("S");
+        // for()
     }
 
     void insertPredictTable(string n, string t, production p)
