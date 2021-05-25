@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
+#include "LexAnalysis.cpp"
 #include "tokens.h"
-#include "node.h"
+// #include "node.h"
 // #include "productions.h"
 #include "utils.h"
 
@@ -23,9 +24,9 @@ private:
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack; // 分析栈
-    vector<string> buffer;   // 输入缓冲区
-    vector<string> error_list;  // 出现错误的输入串中的符号
+    stack<string> ana_stack;   // 分析栈
+    vector<string> buffer;     // 输入缓冲区
+    vector<string> error_list; // 出现错误的输入串中的符号
 
 public:
     LL1(vector<string> tl, vector<node> e)
@@ -37,6 +38,7 @@ public:
         getFOLLOWset();
         getPredictTable();
         show();
+        analysis();
     }
 
     void insertFIRST(string left, string cur_symbol)
@@ -246,11 +248,13 @@ public:
 
     void analysis()
     {
+        cout << "Syntax Analysis Start!" << endl;
         ana_stack.push("S");
         for (auto e : elements)
         {
             string a = e.terminal;      // 输入符号a
             string x = ana_stack.top(); // 栈顶符号x
+            cout << "x: " << x << ", a: " << a << endl;
             try
             {
                 if (isTERMINAL(x))
@@ -262,12 +266,13 @@ public:
                     }
                     else
                     {
-                        throw("GrammerError");
+                        // throw("GrammerError");
                     }
                 }
                 else if (isNON_TERMINAL(x))
                 {
                     production p = pre_table[x][a];
+                    p.show();
                     if (p.str != "")
                     {
                         ana_stack.pop();
@@ -278,7 +283,7 @@ public:
                     }
                     else
                     {
-                        throw("MatchError");
+                        // throw("MatchError");
                     }
                 }
             }
@@ -426,7 +431,10 @@ public:
 
 int main()
 {
+    LexAnalysis la("syn_test.c");
+    la.analysis();
+    la.showResult();
     vector<string> tl;
-    vector<node> e;
+    vector<node> e = la.elements;
     LL1 l(tl, e);
 }

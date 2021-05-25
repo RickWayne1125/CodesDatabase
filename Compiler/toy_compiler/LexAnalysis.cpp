@@ -9,7 +9,7 @@ using namespace std;
 
 class LexAnalysis
 {
-private:
+public:
     ifstream f_input;
     ostringstream s_input;
     string codes;
@@ -20,7 +20,7 @@ private:
     map<string, node> token_map; // 符号表
     vector<node> elements;
 
-public:
+// public:
     LexAnalysis(const char *file) : f_input(file)
     {
         initMap();

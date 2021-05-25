@@ -24,7 +24,8 @@ public:
         line = l;
         vector<int> lines; // 出现过的行
         msg = m;
-        terminal = (v == IDENTIFIER) ? "id" : m;
+        terminal = (v == IDENTIFIER) ? "id" : ((v == INTEGER)) ? "num"
+                                                               : m;
     }
 
     void save_token(int i = 0, string s = "", double d = 0.0, char c = ' ')

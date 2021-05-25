@@ -3,8 +3,10 @@
 //
 #include <bits/stdc++.h>
 // 终结符表与非终结符表
-set<string> NON_TERMINAL_LIST{"S", "E", "T", "T1", "F"};
-set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "-", "*", "/", "int", "(", ")"};
+set<string> NON_TERMINAL_LIST{"S", 
+                              //"E", "T", "T1", "F",
+                              "A", "B", "B'","S'"};
+set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "num", "-", "*", "/", "int", "(", ")", ";"};
 
 // 产生式编码
 #define TEST1 "S -> T E"
@@ -15,24 +17,35 @@ set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "-", "*", "/", "int",
 #define TEST6 "T1 -> none"
 #define TEST7 "F -> ( S )"
 #define TEST8 "F -> id"
-#define PRO_DECLARE_INT "B -> int A"
-#define PRO_ADD "B -> A + A"
-#define PRO_A_END "A -> none"
+
+#define PRO_DECLARE_INT "S -> int A"
+#define PRO_EQUAL "S -> A = B"
+#define PRO_ADD "B -> id B'"
+#define PRO_IDEN_A "A -> id"
+#define PRO_IDEN_B "B' -> id"
 
 // 产生式列表
 vector<string> productions = {
-    TEST1,
-    TEST2,
-    TEST3,
-    TEST4,
-    TEST5,
-    TEST6,
-    TEST7,
-    TEST8,
+    // TEST1,
+    // TEST2,
+    // TEST3,
+    // TEST4,
+    // TEST5,
+    // TEST6,
+    // TEST7,
+    // TEST8,
     // PRO_DECLARE_INT,
     // PRO_ADD,
     // PRO_A_END,
-};
+    "S -> S' S",
+    "S -> none",
+    "S' -> int A ;",
+    "A -> id",
+    "S' -> A = B ;",
+    "B -> id B'",
+    "B -> num B'",
+    "B' -> none",
+    "B' -> + B B'"};
 
 // 分割函数
 vector<string> split(const string &str, const string &delim)
