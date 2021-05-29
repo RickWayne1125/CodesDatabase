@@ -79,7 +79,8 @@ public:
             else if (temp == '\n' || temp == '\r')
             {
                 cout << "huanhang" << endl;
-                index += 2;
+                // index += 2;
+                index += 1;
                 cur_line++;
                 continue;
             }

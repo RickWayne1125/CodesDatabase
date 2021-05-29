@@ -252,54 +252,121 @@ public:
         ana_stack.push("S");
         for (auto e : elements)
         {
-            string a = e.terminal;      // 输入符号a
-            string x = ana_stack.top(); // 栈顶符号x
-            cout << "x: " << x << ", a: " << a << endl;
-            try
+            while (!ana_stack.empty())
             {
-                if (isTERMINAL(x))
+                string a = e.terminal; // 输入符号a
+                while (!ana_stack.empty() && ana_stack.top() == "none")
                 {
-                    if (x == a)
-                    {
-                        ana_stack.pop();
-                        continue;
-                    }
-                    else
-                    {
-                        // throw("GrammerError");
-                    }
+                    cout << "Replace None" << endl;
+                    ana_stack.pop();
                 }
-                else if (isNON_TERMINAL(x))
+                if (ana_stack.empty())
+                    break;
+                string x = ana_stack.top(); // 栈顶符号x
+                stack<string> temp = ana_stack;
+                cout << "x: " << x << ", a: " << a << endl;
+                cout << "stack: ";
+                while (!temp.empty())
                 {
-                    production p = pre_table[x][a];
-                    p.show();
-                    if (p.str != "")
+                    cout << temp.top() << " ";
+                    temp.pop();
+                }
+                cout << endl;
+                try
+                {
+                    if (isTERMINAL(x))
                     {
-                        ana_stack.pop();
-                        for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
+                        if (x == a)
                         {
-                            ana_stack.push(*iter);
+                            cout << "Pop Success" << endl;
+                            ana_stack.pop();
+                            break;
+                        }
+                        else
+                        {
+                            throw("GrammerError");
+                            break;
                         }
                     }
-                    else
+                    else if (isNON_TERMINAL(x))
                     {
-                        // throw("MatchError");
+                        production p = pre_table[x][a];
+                        p.show();
+                        if (p.str != "")
+                        {
+                            ana_stack.pop();
+                            for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
+                            {
+                                ana_stack.push(*iter);
+                            }
+                        }
+                        else
+                        {
+                            throw("MatchError");
+                            break;
+                        }
                     }
                 }
-            }
-            catch (string exception)
-            {
-                if (exception == "GrammerError")
+                catch (string exception)
                 {
-                    cout << "ERROR: Grammer Error Occurs at Line " + to_string(e.line) + " ---- " + e.msg << endl;
+                    if (exception == "GrammerError")
+                    {
+                        cout << "ERROR: Grammer Error Occurs at Line " + to_string(e.line) + " ---- " + e.msg << endl;
+                    }
+                    else if (exception == "MatchError")
+                    {
+                        cout << "ERROR: No Productions Could Match From " + x + " to " + a << endl;
+                    }
+                    error_list.push_back(a);
+                    // continue;
+                    break;
                 }
-                else if (exception == "MatchError")
-                {
-                    cout << "ERROR: No Productions Could Match From " + x + " to " + a << endl;
-                }
-                error_list.push_back(a);
-                continue;
             }
+
+            cout << endl;
+            // if (!ana_stack.empty())
+            // { // 若栈内仍有符号，则确认是否可以指向none
+            //     while (!ana_stack.empty())
+            //     {
+            //         string x = ana_stack.top();
+            //         string a = "none";
+            //         if (isNON_TERMINAL(x))
+            //         { // 若为非终结符则继续判断
+            //             production p = pre_table[x][a];
+            //             p.show();
+            //             if (p.str != "")
+            //             {
+            //                 ana_stack.pop();
+            //                 for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
+            //                 {
+            //                     ana_stack.push(*iter);
+            //                 }
+            //             }
+            //             else
+            //             {
+            //                 cout << "MatchError" << endl;
+            //                 break;
+            //             }
+            //         }
+            //         else if (isTERMINAL(x))
+            //         {
+            //             if (x == a)
+            //             {
+            //                 ana_stack.pop();
+            //             }
+            //             else
+            //             {
+            //                 cout << "MatchError" << endl;
+            //                 break;
+            //             }
+            //         }
+            //         else
+            //         {
+            //             cout << "GrammerError" << endl;
+            //             break;
+            //         }
+            //     }
+            // }
             if (ana_stack.empty())
             {
                 cout << "Syntax Analysis Succeed!" << endl;
@@ -436,5 +503,7 @@ int main()
     la.showResult();
     vector<string> tl;
     vector<node> e = la.elements;
+    node n("$");
+    e.push_back(n);
     LL1 l(tl, e);
 }

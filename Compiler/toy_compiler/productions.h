@@ -6,7 +6,7 @@
 set<string> NON_TERMINAL_LIST{"S",
                               //"E", "T", "T1", "F",
                               "A", "B", "B'", "S'"};
-set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "num", "-", "*", "/", "int", "(", ")", ";"};
+set<string> TERMINAL_LIST = {"none", "=", "$", "if", "+", "id", "num", "-", "*", "/", "type", "(", ")", ";"};
 
 // 产生式编码
 #define TEST1 "S -> T E"
@@ -18,7 +18,7 @@ set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "num", "-", "*", "/",
 #define TEST7 "F -> ( S )"
 #define TEST8 "F -> id"
 
-#define PRO_DECLARE_INT "S -> int A"
+#define PRO_DECLARE_INT "S -> type A"
 #define PRO_EQUAL "S -> A = B"
 #define PRO_ADD "B -> id B'"
 #define PRO_IDEN_A "A -> id"
@@ -39,7 +39,7 @@ vector<string> productions = {
     // PRO_A_END,
     "S -> S' S",
     "S -> none",
-    "S' -> int A ;",
+    "S' -> type A ;",
     "A -> id",
     "S' -> A = B ;",
     "B -> id B'",
