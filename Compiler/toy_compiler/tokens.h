@@ -39,6 +39,13 @@
 #define CGT     137     // >
 #define CGE     138     // >=
 #define DOT     139     // .
+#define GET     140     // get
+#define PUT     141     // put
+#define AND     142     // &
+#define OR      143     // |
+#define DAND    144     // &&
+#define DOR     145     // ||
+#define NOT     146     // !
 // Delimiter
 #define LPAREN  256     // (
 #define RPAREN  257     // )

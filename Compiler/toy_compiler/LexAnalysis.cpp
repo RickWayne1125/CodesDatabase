@@ -20,7 +20,7 @@ public:
     map<string, node> token_map; // 符号表
     vector<node> elements;
 
-// public:
+    // public:
     LexAnalysis(const char *file) : f_input(file)
     {
         initMap();
@@ -59,6 +59,13 @@ public:
         keywords["<="] = CLE;
         keywords[">"] = CGT;
         keywords[">="] = CGE;
+        keywords["get"] = GET;
+        keywords["put"] = PUT;
+        keywords["&"] = AND;
+        keywords["&&"] = DAND;
+        keywords["|"] = OR;
+        keywords["||"] = DOR;
+        keywords["!"] = NOT;
         //        keywords["."]=;
     }
 
@@ -315,10 +322,10 @@ public:
     }
 };
 
-// int main()
-// {
-//     char *file = "test.c";
-//     LexAnalysis la(file);
-//     la.analysis();
-//     la.showResult();
-// }
+int main()
+{
+    char *file = "caltest.c";
+    LexAnalysis la(file);
+    la.analysis();
+    la.showResult();
+}
