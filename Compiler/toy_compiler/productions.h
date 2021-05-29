@@ -3,9 +3,9 @@
 //
 #include <bits/stdc++.h>
 // 终结符表与非终结符表
-set<string> NON_TERMINAL_LIST{"S", 
+set<string> NON_TERMINAL_LIST{"S",
                               //"E", "T", "T1", "F",
-                              "A", "B", "B'","S'"};
+                              "A", "B", "B'", "S'"};
 set<string> TERMINAL_LIST = {"none", "$", "if", "+", "id", "num", "-", "*", "/", "int", "(", ")", ";"};
 
 // 产生式编码

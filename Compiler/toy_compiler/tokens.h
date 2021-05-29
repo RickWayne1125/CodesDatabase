@@ -25,6 +25,7 @@
 #define ELSE    11
 #define FOR     12
 #define WHILE   13
+#define TYPE    14
 // Operators
 #define ADD     128     // +
 #define SUB     129     // -

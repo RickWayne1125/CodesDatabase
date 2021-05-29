@@ -35,9 +35,9 @@ public:
     void initMap()
     {
         keywords["const"] = CONST;
-        keywords["int"] = INTEGER;
-        keywords["double"] = DOUBLE;
-        keywords["char"] = CHAR;
+        keywords["int"] = TYPE;
+        keywords["double"] = TYPE;
+        keywords["char"] = TYPE;
         keywords["string"] = STRING;
         keywords["hexint"] = HEXINT;
         keywords["hexdou"] = HEXDOU;
