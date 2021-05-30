@@ -6,7 +6,9 @@
 set<string> NON_TERMINAL_LIST{"S",
                               //"E", "T", "T1", "F",
                               "A", "B", "B'", "S'"};
-set<string> TERMINAL_LIST = {"none", "=", "$", "if", "+", "id", "num", "-", "*", "/", "type", "(", ")", ";"};
+set<string> TERMINAL_LIST = {"none", "$",   
+                             "if", "id", "num","type",
+                             "=", "-", "+", "*", "/",  "(", ")", ";"};
 
 // 产生式编码
 #define TEST1 "S -> T E"
