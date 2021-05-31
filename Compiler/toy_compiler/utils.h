@@ -73,3 +73,4 @@ void Draw_Datas(vector<int> max, vector<vector<string>> Str, vector<string> D, i
     }
     Draw_line(max, columns);
 }
+

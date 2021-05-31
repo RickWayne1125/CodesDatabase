@@ -7,29 +7,41 @@
 
 using namespace std;
 
+struct ASTNode
+{
+    ASTNode *parent;
+    vector<ASTNode *> children; // 子节点
+    string label;               // 对应终结符/非终结符
+    void set(string l)
+    {
+        this->label = l;
+        this->parent = NULL;
+    }
+};
 class AST
 {
+private:
+    ASTNode *root;
+
 public:
-    vector<AST *> children; // 子节点
-    // string text;            // 当前串
-    string label; // 对应终结符/非终结符
-    AST() {}
-    AST(string l)
+    void init(ASTNode *root)
     {
-        // text = te;
-        label = l;
+        this->root = root;
     }
-    void show()
+    void insert(ASTNode *p, ASTNode *c)
     {
-        cout << "NODE: " << label << endl;
-        for (auto i : children)
+        c->parent = p;
+        p->children.push_back(c);
+    }
+    void show(ASTNode *root)
+    {
+        if (root->parent != NULL)
+            cout << "PARENT: " << root->parent->label << " ";
+        cout << "NODE: " << root->label << endl;
+        for (auto i : root->children)
         {
-            i->show();
+            show(i);
         }
-    }
-    void insert(AST *node)
-    {
-        children.push_back(node);
     }
 };
 
@@ -45,14 +57,16 @@ private:
     stack<string> ana_stack;   // 分析栈
     vector<string> buffer;     // 输入缓冲区
     vector<string> error_list; // 出现错误的输入串中的符号
-    AST root;                  // 语法分析树
+    ASTNode *root;
+    AST tree; // 语法分析树
 
 public:
     LL1(vector<string> tl, vector<node> e)
     {
         token_list = tl;
         elements = e;
-        root.label = "S";
+        tree.init(root);
+        // root.label = "S";
         initProduction();
         getFIRSTset();
         getFOLLOWset();
@@ -270,7 +284,7 @@ public:
     {
         cout << "Syntax Analysis Start!" << endl;
         ana_stack.push("S");
-        AST *temp_root = &root;
+        // AST *temp_root = &root;
         for (auto e : elements)
         {
             while (!ana_stack.empty())
@@ -531,12 +545,25 @@ public:
 
 int main()
 {
-    LexAnalysis la("caltest.c");
-    la.analysis();
-    la.showResult();
-    vector<string> tl;
-    vector<node> e = la.elements;
-    node n("$");
-    e.push_back(n);
-    LL1 l(tl, e);
+    cout << "TEST START!" << endl;
+    // ASTNode root;
+    // root.set("S");
+    // ASTNode node1;
+    // node1.label = "A";
+    // ASTNode node2;
+    // node2.label = "B";
+    // AST tree;
+    // tree.init(&root);
+    // tree.insert(&root, &node1);
+    // tree.insert(&root, &node2);
+    // tree.show(&root);
+
+    // LexAnalysis la("caltest.c");
+    // la.analysis();
+    // la.showResult();
+    // vector<string> tl;
+    // vector<node> e = la.elements;
+    // node n("$");
+    // e.push_back(n);
+    // LL1 l(tl, e);
 }
