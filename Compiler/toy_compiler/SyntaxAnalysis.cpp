@@ -10,9 +10,10 @@ using namespace std;
 class AST
 {
 public:
-    vector<AST> children; // 子节点
+    vector<AST *> children; // 子节点
     // string text;            // 当前串
     string label; // 对应终结符/非终结符
+    AST() {}
     AST(string l)
     {
         // text = te;
@@ -21,9 +22,14 @@ public:
     void show()
     {
         cout << "NODE: " << label << endl;
-        for(auto i:children){
-            i.show();
+        for (auto i : children)
+        {
+            i->show();
         }
+    }
+    void insert(AST *node)
+    {
+        children.push_back(node);
     }
 };
 
@@ -39,12 +45,14 @@ private:
     stack<string> ana_stack;   // 分析栈
     vector<string> buffer;     // 输入缓冲区
     vector<string> error_list; // 出现错误的输入串中的符号
+    AST root;                  // 语法分析树
 
 public:
     LL1(vector<string> tl, vector<node> e)
     {
         token_list = tl;
         elements = e;
+        root.label = "S";
         initProduction();
         getFIRSTset();
         getFOLLOWset();
@@ -262,6 +270,7 @@ public:
     {
         cout << "Syntax Analysis Start!" << endl;
         ana_stack.push("S");
+        AST *temp_root = &root;
         for (auto e : elements)
         {
             while (!ana_stack.empty())
@@ -385,6 +394,7 @@ public:
             }
         }
     }
+
     void insertPredictTable(string n, string t, production p)
     {
         if (pre_table[n][t].str == "")
