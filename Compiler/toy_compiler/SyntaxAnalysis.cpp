@@ -375,7 +375,8 @@ public:
     }
     void insertPredictTable(string n, string t, production p)
     {
-        pre_table[n][t] = p;
+        if (pre_table[n][t].str == "")
+            pre_table[n][t] = p;
     }
 
     void getPredictTable()
@@ -400,7 +401,10 @@ public:
                 if (isTERMINAL(p.right[0]))
                 {
                     if (p.right[0] != "none")
+                    {
+                        cout << p.right[0] << endl;
                         insertPredictTable(p.left, p.right[0], p);
+                    }
                     else
                     {
                         // 遍历左部FOLLOW集
@@ -475,7 +479,7 @@ public:
         vector<int> max;
         for (int i = 0; i < col; i++)
         {
-            max.push_back(13);
+            max.push_back(20);
         }
         // 构造表数据
         vector<vector<string>> Str;
@@ -498,7 +502,7 @@ public:
 
 int main()
 {
-    LexAnalysis la("syn_test.c");
+    LexAnalysis la("caltest.c");
     la.analysis();
     la.showResult();
     vector<string> tl;

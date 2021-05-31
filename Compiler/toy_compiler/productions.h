@@ -3,12 +3,29 @@
 //
 #include <bits/stdc++.h>
 // 终结符表与非终结符表
-set<string> NON_TERMINAL_LIST{"S",
-                              //"E", "T", "T1", "F",
-                              "A", "B", "B'", "S'"};
-set<string> TERMINAL_LIST = {"none", "$",   
-                             "if", "id", "num","type",
-                             "=", "-", "+", "*", "/",  "(", ")", ";"};
+set<string> NON_TERMINAL_LIST{
+    "S", // 分析开始标识
+    //"E", "T", "T1", "F",
+    "BLOCK",     // 语句块开始标识
+    "S'",        // 单条语句开始标识
+    "LOGIC",     // 逻辑表达式
+    "ELSE",      // else起始标志
+    "ID", "ID'", // 标识符序列
+    "A",         // 变量
+    "B",         // 变量/表达式/数字常量
+    "B'",        // 用于消除B左递归
+};
+set<string> TERMINAL_LIST = {
+    // 空与结束符号
+    "none", "$",
+    // 关键字
+    "if", "else", "id", "num", "type", "get", "put",
+    // 运算符
+    "=", "-", "+", "*", "/", "&", "|",
+    // 逻辑运算符
+    "<", ">", "==", "!=", "<=", ">=",
+    // 分割符
+    "(", ")", "{", "}", ";", ","};
 
 // 产生式编码
 #define TEST1 "S -> T E"
@@ -20,34 +37,93 @@ set<string> TERMINAL_LIST = {"none", "$",
 #define TEST7 "F -> ( S )"
 #define TEST8 "F -> id"
 
-#define PRO_DECLARE_INT "S -> type A"
-#define PRO_EQUAL "S -> A = B"
-#define PRO_ADD "B -> id B'"
-#define PRO_IDEN_A "A -> id"
-#define PRO_IDEN_B "B' -> id"
+#define PRO_BEGIN "S -> BLOCK"
+#define PRO_BLOCK "BLOCK -> S' BLOCK"
+#define PRO_NONE_BLOCK "BLOCK -> none"
+// #define PRO_END "S -> none"
+#define PRO_DECLARE "S' -> type ID ;"
+#define PRO_GET "S' -> get ( ID ) ;"
+#define PRO_PUT "S' -> put ( ID ) ;"
+#define PRO_ID_ID "ID -> A ID'"
+#define PRO_ID_LIST "ID' -> , ID"
+#define PRO_NONE_ID "ID' -> none"
+#define PRO_EQUAL "S' -> A = B ;"
+#define PRO_EXP_ID "B -> id B'"
+#define PRO_EXP_NUM "B -> num B'"
+#define PRO_EXP_CLO "B -> ( B )" // 表达式闭包
+#define PRO_EXP_ADD "B' -> + B B'"
+#define PRO_EXP_SUB "B' -> - B B'"
+#define PRO_EXP_MUL "B' -> * B B'"
+#define PRO_EXP_DIV "B' -> / B B'"
+#define PRO_EXP_AND "B' -> & B B'"
+#define PRO_EXP_OR "B' -> | B B'"
+#define PRO_EXP_EQU "B' -> == B B'"
+#define PRO_EXP_UEQ "B' -> != B B'"
+#define PRO_EXP_BEQ "B' -> >= B B'"
+#define PRO_EXP_LEQ "B' -> <= B B'"
+#define PRO_EXP_BNE "B' -> > B B'"
+#define PRO_EXP_LNE "B' -> < B B'"
+#define PRO_NONE_B "B' -> none"
+#define PRO_ID_A "A -> id"
 
+#define PRO_EXP_IF "S' -> if ( LOGIC ) { BLOCK } ; ELSE"
+#define PRO_EXP_ELSE "ELSE -> else { BLOCK } ;"
+#define PRO_NONE_ELSE "ELSE -> none"
+#define PRO_LOGIC "LOGIC -> B"
 // 产生式列表
-vector<string> productions = {
-    // TEST1,
-    // TEST2,
-    // TEST3,
-    // TEST4,
-    // TEST5,
-    // TEST6,
-    // TEST7,
-    // TEST8,
-    // PRO_DECLARE_INT,
-    // PRO_ADD,
-    // PRO_A_END,
-    "S -> S' S",
-    "S -> none",
-    "S' -> type A ;",
-    "A -> id",
-    "S' -> A = B ;",
-    "B -> id B'",
-    "B -> num B'",
-    "B' -> none",
-    "B' -> + B B'"};
+vector<string>
+    productions = {
+        PRO_BEGIN,
+        PRO_BLOCK,
+        PRO_DECLARE,
+        PRO_EQUAL,
+        PRO_EXP_ADD,
+        PRO_EXP_AND,
+        PRO_EXP_BEQ,
+        PRO_EXP_BNE,
+        PRO_EXP_CLO,
+        PRO_EXP_DIV,
+        PRO_EXP_ELSE,
+        PRO_EXP_EQU,
+        PRO_EXP_ID,
+        PRO_EXP_IF,
+        PRO_EXP_LEQ,
+        PRO_EXP_LNE,
+        PRO_EXP_MUL,
+        PRO_EXP_NUM,
+        PRO_EXP_OR,
+        PRO_EXP_SUB,
+        PRO_EXP_UEQ,
+        PRO_ID_A,
+        PRO_ID_ID,
+        PRO_ID_LIST,
+        PRO_LOGIC,
+        PRO_NONE_B,
+        PRO_NONE_BLOCK,
+        PRO_NONE_ELSE,
+        PRO_NONE_ID,
+        PRO_GET, PRO_PUT
+        // TEST1,
+        // TEST2,
+        // TEST3,
+        // TEST4,
+        // TEST5,
+        // TEST6,
+        // TEST7,
+        // TEST8,
+        // PRO_DECLARE_INT,
+        // PRO_ADD,
+        // PRO_A_END,
+        // "S -> S' S",
+        // "S -> none",
+        // "S' -> type A ;",
+        // "A -> id",
+        // "S' -> A = B ;",
+        // "B -> id B'",
+        // "B -> num B'",
+        // "B' -> none",
+        // "B' -> + B B'"
+};
 
 // 分割函数
 vector<string> split(const string &str, const string &delim)

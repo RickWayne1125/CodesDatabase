@@ -24,9 +24,9 @@ public:
         line = l;
         vector<int> lines; // 出现过的行
         msg = m;
-        terminal = (v == IDENTIFIER) ? "id" : (v == INTEGER) ? "num"
-                                          : (v == TYPE)      ? "type"
-                                                             : m;
+        terminal = (v == IDENTIFIER) ? "id" : (v == INTEGER || v == DOUBLE) ? "num"
+                                          : (v == TYPE)                     ? "type"
+                                                                            : m;
     }
     node(string t)
     {
