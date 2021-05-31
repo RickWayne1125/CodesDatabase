@@ -477,9 +477,16 @@ public:
         }
         // 构造最大列宽
         vector<int> max;
-        for (int i = 0; i < col; i++)
+        max.push_back(5);
+        for (auto i : TERMINAL_LIST)
         {
-            max.push_back(20);
+            int maxlen = (i.length() > 1) ? i.length() : i.length() + 1;
+            for (auto j : NON_TERMINAL_LIST)
+            {
+                if (pre_table[j][i].str.length() > maxlen)
+                    maxlen = pre_table[j][i].str.length();
+            }
+            max.push_back(maxlen);
         }
         // 构造表数据
         vector<vector<string>> Str;
