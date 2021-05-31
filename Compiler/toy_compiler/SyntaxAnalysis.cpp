@@ -9,10 +9,22 @@ using namespace std;
 
 class AST
 {
-private:
-    string text; // 当前串
 public:
-    vector<AST *> children; // 子节点
+    vector<AST> children; // 子节点
+    // string text;            // 当前串
+    string label; // 对应终结符/非终结符
+    AST(string l)
+    {
+        // text = te;
+        label = l;
+    }
+    void show()
+    {
+        cout << "NODE: " << label << endl;
+        for(auto i:children){
+            i.show();
+        }
+    }
 };
 
 class LL1
