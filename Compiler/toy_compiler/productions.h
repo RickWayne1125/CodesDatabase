@@ -10,6 +10,7 @@ set<string> NON_TERMINAL_LIST{
     "S'",        // 单条语句开始标识
     "LOGIC",     // 逻辑表达式
     "ELSE",      // else起始标志
+    "FOR",       // for循环起始标志
     "ID", "ID'", // 标识符序列
     "A",         // 变量
     "B",         // 变量/表达式/数字常量
@@ -19,7 +20,7 @@ set<string> TERMINAL_LIST = {
     // 空与结束符号
     "none", "$",
     // 关键字
-    "if", "else", "id", "num", "type", "get", "put", "while",
+    "if", "else", "id", "num", "type", "get", "put", "while", "for",
     // 运算符
     "=", "-", "+", "*", "/", "&", "|",
     // 逻辑运算符
@@ -68,7 +69,9 @@ set<string> TERMINAL_LIST = {
 
 #define PRO_EXP_IF "S' -> if ( LOGIC ) { BLOCK } ; ELSE"
 #define PRO_EXP_WHILE "S' -> while ( LOGIC ) { BLOCK } ;"
+#define PRO_EXP_FOR "S' -> for ( LOGIC ; B ) { BLOCK } ;"
 #define PRO_EXP_ELSE "ELSE -> else { BLOCK } ;"
+#define PRO_EXP_IF_ELSE "ELSE -> else if ( LOGIC ) { BLOCK } ;"
 #define PRO_NONE_ELSE "ELSE -> none"
 #define PRO_LOGIC "LOGIC -> B"
 // 产生式列表
