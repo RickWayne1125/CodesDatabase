@@ -19,7 +19,7 @@ set<string> TERMINAL_LIST = {
     // 空与结束符号
     "none", "$",
     // 关键字
-    "if", "else", "id", "num", "type", "get", "put",
+    "if", "else", "id", "num", "type", "get", "put", "while",
     // 运算符
     "=", "-", "+", "*", "/", "&", "|",
     // 逻辑运算符
@@ -67,6 +67,7 @@ set<string> TERMINAL_LIST = {
 #define PRO_ID_A "A -> id"
 
 #define PRO_EXP_IF "S' -> if ( LOGIC ) { BLOCK } ; ELSE"
+#define PRO_EXP_WHILE "S' -> while ( LOGIC ) { BLOCK } ;"
 #define PRO_EXP_ELSE "ELSE -> else { BLOCK } ;"
 #define PRO_NONE_ELSE "ELSE -> none"
 #define PRO_LOGIC "LOGIC -> B"
@@ -94,6 +95,7 @@ vector<string>
         PRO_EXP_OR,
         PRO_EXP_SUB,
         PRO_EXP_UEQ,
+        PRO_EXP_WHILE,
         PRO_ID_A,
         PRO_ID_ID,
         PRO_ID_LIST,

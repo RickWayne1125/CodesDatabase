@@ -10,12 +10,16 @@ using namespace std;
 struct ASTNode
 {
     ASTNode *parent;
+    // ASTNode *next_sibling;      // 下一个兄弟节点
+    int code;                   // 每个节点的唯一标识符
     vector<ASTNode *> children; // 子节点
     string label;               // 对应终结符/非终结符
-    void set(string l)
+    void set(string l, int c)
     {
         this->label = l;
-        this->parent = NULL;
+        this->parent = nullptr;
+        this->code = c;
+        // this->next_sibling = nullptr;
     }
 };
 class AST
@@ -31,16 +35,41 @@ public:
     void insert(ASTNode *p, ASTNode *c)
     {
         c->parent = p;
+        // p->children[-1]->next_sibling = c;
         p->children.push_back(c);
     }
     void show(ASTNode *root)
     {
-        if (root->parent != NULL)
+        cout << "CODE: " << root->code << " ";
+        if (root->parent != nullptr)
             cout << "PARENT: " << root->parent->label << " ";
-        cout << "NODE: " << root->label << endl;
+        cout << "LABLE: " << root->label << " ";
+        cout << "CHILDREN: ";
+        for (auto i : root->children)
+        {
+            cout << i->code << " ";
+        }
+        cout << endl;
         for (auto i : root->children)
         {
             show(i);
+        }
+    }
+    void generateGRAPH()
+    {
+        cout << "GRAPHVIZ CODE:" << endl;
+        cout << "digraph G {" << endl;
+        DFS(root);
+        cout << "}" << endl;
+    }
+    void DFS(ASTNode *root)
+    {
+        cout << "node" << root->code << "[label=\"" << root->label << "\"];" << endl;
+        for (auto i : root->children)
+        {
+            DFS(i);
+            cout << "node" << root->code << "->"
+                 << "node" << i->code << ";" << endl;
         }
     }
 };
@@ -54,25 +83,28 @@ private:
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack;   // 分析栈
-    vector<string> buffer;     // 输入缓冲区
-    vector<string> error_list; // 出现错误的输入串中的符号
-    ASTNode *root;
-    AST tree; // 语法分析树
+    stack<string> ana_stack;    // 分析栈
+    vector<string> buffer;      // 输入缓冲区
+    vector<string> error_list;  // 出现错误的输入串中的符号
+    ASTNode *root;              // 语法分析树根节点
+    AST tree;                   // 语法分析树
+    vector<production> history; // 产生式使用记录
+    int index;                  // 产生式使用历史下标
+    int code;                   // 当前节点编码
 
 public:
     LL1(vector<string> tl, vector<node> e)
     {
         token_list = tl;
         elements = e;
-        tree.init(root);
-        // root.label = "S";
         initProduction();
         getFIRSTset();
         getFOLLOWset();
         getPredictTable();
-        show();
         analysis();
+        getASTree();
+        show();
+        tree.generateGRAPH();
     }
 
     void insertFIRST(string left, string cur_symbol)
@@ -284,7 +316,6 @@ public:
     {
         cout << "Syntax Analysis Start!" << endl;
         ana_stack.push("S");
-        // AST *temp_root = &root;
         for (auto e : elements)
         {
             while (!ana_stack.empty())
@@ -329,6 +360,7 @@ public:
                         p.show();
                         if (p.str != "")
                         {
+                            history.push_back(p);
                             ana_stack.pop();
                             for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
                             {
@@ -359,49 +391,6 @@ public:
             }
 
             cout << endl;
-            // if (!ana_stack.empty())
-            // { // 若栈内仍有符号，则确认是否可以指向none
-            //     while (!ana_stack.empty())
-            //     {
-            //         string x = ana_stack.top();
-            //         string a = "none";
-            //         if (isNON_TERMINAL(x))
-            //         { // 若为非终结符则继续判断
-            //             production p = pre_table[x][a];
-            //             p.show();
-            //             if (p.str != "")
-            //             {
-            //                 ana_stack.pop();
-            //                 for (auto iter = p.right.rbegin(); iter != p.right.rend(); iter++)
-            //                 {
-            //                     ana_stack.push(*iter);
-            //                 }
-            //             }
-            //             else
-            //             {
-            //                 cout << "MatchError" << endl;
-            //                 break;
-            //             }
-            //         }
-            //         else if (isTERMINAL(x))
-            //         {
-            //             if (x == a)
-            //             {
-            //                 ana_stack.pop();
-            //             }
-            //             else
-            //             {
-            //                 cout << "MatchError" << endl;
-            //                 break;
-            //             }
-            //         }
-            //         else
-            //         {
-            //             cout << "GrammerError" << endl;
-            //             break;
-            //         }
-            //     }
-            // }
             if (ana_stack.empty())
             {
                 cout << "Syntax Analysis Succeed!" << endl;
@@ -458,6 +447,80 @@ public:
                         insertPredictTable(p.left, first, p);
                     }
                 }
+            }
+        }
+    }
+
+    void getASTree()
+    {
+        cout << "INIT AST......" << endl;
+        root = new ASTNode;
+        this->code = 0;
+        root->set("S", code);
+        tree.init(root);
+        index = 0;
+        DFS(root);
+        // ASTNode *cur = &root;
+        // ASTNode *first_child = nullptr;
+        // for (auto p : history)
+        // {
+        //     string left = p.left;
+        //     vector<string> right = p.right;
+        //     if (left == "S")
+        //     {
+        //         for (int i = 0; i < right.size(); i++)
+        //         {
+        //             ASTNode temp;
+        //             temp.set(right[i]);
+        //             if (i == 0)
+        //                 first_child = &temp;
+        //             tree.insert(cur, &temp);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         while (cur->label != left && cur->next_sibling != nullptr)
+        //         {
+        //             cur = cur->next_sibling;
+        //         }
+        //         if (cur->label == left)
+        //         {
+        //             for (int i = 0; i < right.size(); i++)
+        //             {
+        //                 ASTNode temp;
+        //                 temp.set(right[i]);
+        //                 if (i == 0)
+        //                     first_child = &temp;
+        //                 tree.insert(cur, &temp);
+        //             }
+        //         }
+        //     }
+        // }
+    }
+    void DFS(ASTNode *root)
+    {
+        // cout << index << endl;
+        // cout << "root: " << root->label << endl;
+        production p;
+        if (index < history.size())
+        {
+            p = history[index];
+            p.show();
+        }
+        else
+            return;
+        vector<string> right = p.right;
+        for (auto i : right)
+        {
+            ASTNode *temp = new ASTNode;
+            code++;
+            temp->set(i, code);
+            // cout << "child: " << i << endl;
+            tree.insert(root, temp);
+            if (isNON_TERMINAL(i))
+            {
+                index++;
+                DFS(temp);
             }
         }
     }
@@ -540,6 +603,13 @@ public:
         }
         // 绘制预测分析表
         Draw_Datas(max, Str, D, col, row);
+
+        // for (auto i : history)
+        // {
+        //     i.show();
+        // }
+
+        tree.show(root);
     }
 };
 
@@ -558,12 +628,12 @@ int main()
     // tree.insert(&root, &node2);
     // tree.show(&root);
 
-    // LexAnalysis la("caltest.c");
-    // la.analysis();
-    // la.showResult();
-    // vector<string> tl;
-    // vector<node> e = la.elements;
-    // node n("$");
-    // e.push_back(n);
-    // LL1 l(tl, e);
+    LexAnalysis la("runtest.c");
+    la.analysis();
+    la.showResult();
+    vector<string> tl;
+    vector<node> e = la.elements;
+    node n("$");
+    e.push_back(n);
+    LL1 l(tl, e);
 }
