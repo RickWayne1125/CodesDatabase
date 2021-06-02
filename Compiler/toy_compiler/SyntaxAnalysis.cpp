@@ -7,6 +7,25 @@
 
 using namespace std;
 
+struct SynError
+{
+    int line;    // 错误所在行数
+    string type; // 错误类型
+    string x;    // 错误栈顶符号
+    string a;    // 错误输入符号
+    SynError(int l, string type, string x, string a)
+    {
+        this->line = l;
+        this->type = type;
+        this->x = x;
+        this->a = a;
+    }
+    void show()
+    {
+        cout << type << " occurs at " << line << " when stack_top is " << x << " and input is " << a << endl;
+    }
+};
+
 struct ASTNode
 {
     ASTNode *parent;
@@ -83,14 +102,14 @@ private:
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack;    // 分析栈
-    vector<string> buffer;      // 输入缓冲区
-    vector<string> error_list;  // 出现错误的输入串中的符号
-    ASTNode *root;              // 语法分析树根节点
-    AST tree;                   // 语法分析树
-    vector<production> history; // 产生式使用记录
-    int index;                  // 产生式使用历史下标
-    int code;                   // 当前节点编码
+    stack<string> ana_stack;     // 分析栈
+    vector<string> buffer;       // 输入缓冲区
+    vector<SynError> error_list; // 出现错误的输入串中的符号
+    ASTNode *root;               // 语法分析树根节点
+    AST tree;                    // 语法分析树
+    vector<production> history;  // 产生式使用记录
+    int index;                   // 产生式使用历史下标
+    int code;                    // 当前节点编码
 
 public:
     LL1(vector<string> tl, vector<node> e)
@@ -350,8 +369,11 @@ public:
                         }
                         else
                         {
-                            throw("GrammerError");
-                            break;
+                            cout << "TokenMatchError" << endl;
+                            // throw("GrammerError");
+                            SynError e(e.line, "TokenMatchError", x, a);
+                            error_list.push_back(e);
+                            ana_stack.pop();
                         }
                     }
                     else if (isNON_TERMINAL(x))
@@ -369,9 +391,19 @@ public:
                         }
                         else
                         {
-                            throw("MatchError");
-                            break;
+                            cout << "ProductionMatchError" << endl;
+                            SynError e(e.line, "ProductionMatchError", x, a);
+                            error_list.push_back(e);
+                            ana_stack.pop();
                         }
+                    }
+                    else
+                    {
+                        cout << "TokenError" << endl;
+                        // throw("GrammerError");
+                        SynError e(e.line, "TokenError", x, a);
+                        error_list.push_back(e);
+                        break;
                     }
                 }
                 catch (string exception)
@@ -384,17 +416,17 @@ public:
                     {
                         cout << "ERROR: No Productions Could Match From " + x + " to " + a << endl;
                     }
-                    error_list.push_back(a);
+                    // error_list.push_back(a);
                     // continue;
                     break;
                 }
             }
-
-            cout << endl;
-            if (ana_stack.empty())
-            {
-                cout << "Syntax Analysis Succeed!" << endl;
-            }
+        }
+        cout << endl;
+        if (ana_stack.empty())
+        {
+            cout << error_list.size() << " Errors Occured." << endl;
+            cout << "Syntax Analysis Succeed!" << endl;
         }
     }
 
@@ -460,42 +492,6 @@ public:
         tree.init(root);
         index = 0;
         DFS(root);
-        // ASTNode *cur = &root;
-        // ASTNode *first_child = nullptr;
-        // for (auto p : history)
-        // {
-        //     string left = p.left;
-        //     vector<string> right = p.right;
-        //     if (left == "S")
-        //     {
-        //         for (int i = 0; i < right.size(); i++)
-        //         {
-        //             ASTNode temp;
-        //             temp.set(right[i]);
-        //             if (i == 0)
-        //                 first_child = &temp;
-        //             tree.insert(cur, &temp);
-        //         }
-        //     }
-        //     else
-        //     {
-        //         while (cur->label != left && cur->next_sibling != nullptr)
-        //         {
-        //             cur = cur->next_sibling;
-        //         }
-        //         if (cur->label == left)
-        //         {
-        //             for (int i = 0; i < right.size(); i++)
-        //             {
-        //                 ASTNode temp;
-        //                 temp.set(right[i]);
-        //                 if (i == 0)
-        //                     first_child = &temp;
-        //                 tree.insert(cur, &temp);
-        //             }
-        //         }
-        //     }
-        // }
     }
     void DFS(ASTNode *root)
     {
@@ -608,7 +604,13 @@ public:
         // {
         //     i.show();
         // }
-
+        if (error_list.size() > 0)
+        {
+            for (auto e : error_list)
+            {
+                e.show();
+            }
+        }
         tree.show(root);
     }
 };
@@ -628,7 +630,7 @@ int main()
     // tree.insert(&root, &node2);
     // tree.show(&root);
 
-    LexAnalysis la("runtest.c");
+    LexAnalysis la("error_test.c");
     la.analysis();
     la.showResult();
     vector<string> tl;

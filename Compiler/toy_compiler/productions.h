@@ -22,7 +22,7 @@ set<string> TERMINAL_LIST = {
     // 空与结束符号
     "none", "$",
     // 关键字
-    "if", "else", "type", "get", "put", "while", "for",
+    "if", "else", "type", "get", "put", "while", "for", "return",
     // 变量与常量
     "id", "num", "string", "char",
     // 运算符
@@ -46,13 +46,16 @@ set<string> TERMINAL_LIST = {
 #define PRO_BLOCK "BLOCK -> S' BLOCK"
 #define PRO_NONE_BLOCK "BLOCK -> none"
 // #define PRO_END "S -> none"
-#define PRO_DECLARE "S' -> type DEC ;"
-#define PRO_DEC_IDENT "DEC -> ID"
-#define PRO_DEC_FUNCT "DEC -> FUNCT"
-#define PRO_FUNCT "FUNCT -> A ( PARAM ) { BLOCK }"
+#define PRO_DECLARE "S' -> type ID DEC"
+#define PRO_DEC_IDENT "DEC -> ;"
+#define PRO_DEC_FUNCT "DEC -> ( PARAM ) { BLOCK } ;"
+// #define PRO_FUNCT "FUNCT -> ( PARAM ) { BLOCK }"
 #define PRO_PARAM "PARAM -> type A PARAM"
 #define PRO_PARAM_SPLIT "PARAM -> ,"
 #define PRO_PARAM_NONE "PARAM -> none"
+#define PRO_EXP_FUNCT "S' -> id ( PARAM ) ;"
+#define PRO_EXP_RETURN "S' -> return B ;"
+
 #define PRO_GET "S' -> get ( ID ) ;"
 #define PRO_PUT "S' -> put ( ID ) ;"
 #define PRO_ID_ID "ID -> A ID'"
@@ -74,6 +77,7 @@ set<string> TERMINAL_LIST = {
 #define PRO_EXP_LEQ "B' -> <= B B'"
 #define PRO_EXP_BNE "B' -> > B B'"
 #define PRO_EXP_LNE "B' -> < B B'"
+#define PRO_EXP_PARAM "B' -> ( ID )"
 #define PRO_NONE_B "B' -> none"
 #define PRO_ID_A "A -> id"
 
@@ -104,6 +108,7 @@ vector<string>
         PRO_EXP_DIV,
         PRO_EXP_ELSE,
         PRO_EXP_EQU,
+        // PRO_EXP_FUNCT,
         PRO_EXP_ID,
         PRO_EXP_IF,
         PRO_EXP_LEQ,
@@ -122,7 +127,8 @@ vector<string>
         PRO_NONE_BLOCK,
         PRO_NONE_ELSE,
         PRO_NONE_ID,
-        PRO_GET, PRO_PUT
+        PRO_GET, PRO_PUT,
+        PRO_EXP_RETURN, PRO_EXP_PARAM,
         // TEST1,
         // TEST2,
         // TEST3,
