@@ -15,18 +15,22 @@ set<string> NON_TERMINAL_LIST{
     "A",         // 变量
     "B",         // 变量/表达式/数字常量
     "B'",        // 用于消除B左递归
-};
+    "DEC",
+    "FUNCT",
+    "PARAM"};
 set<string> TERMINAL_LIST = {
     // 空与结束符号
     "none", "$",
     // 关键字
-    "if", "else", "id", "num", "type", "get", "put", "while", "for",
+    "if", "else", "type", "get", "put", "while", "for",
+    // 变量与常量
+    "id", "num", "string", "char",
     // 运算符
     "=", "-", "+", "*", "/", "&", "|",
     // 逻辑运算符
-    "<", ">", "==", "!=", "<=", ">=",
+    "<", ">", "==", "!=", "<=", ">=", "&&", "||",
     // 分割符
-    "(", ")", "{", "}", ";", ","};
+    "(", ")", "{", "}", ";", ",", "[", "]"};
 
 // 产生式编码
 #define TEST1 "S -> T E"
@@ -42,7 +46,13 @@ set<string> TERMINAL_LIST = {
 #define PRO_BLOCK "BLOCK -> S' BLOCK"
 #define PRO_NONE_BLOCK "BLOCK -> none"
 // #define PRO_END "S -> none"
-#define PRO_DECLARE "S' -> type ID ;"
+#define PRO_DECLARE "S' -> type DEC ;"
+#define PRO_DEC_IDENT "DEC -> ID"
+#define PRO_DEC_FUNCT "DEC -> FUNCT"
+#define PRO_FUNCT "FUNCT -> A ( PARAM ) { BLOCK }"
+#define PRO_PARAM "PARAM -> type A PARAM"
+#define PRO_PARAM_SPLIT "PARAM -> ,"
+#define PRO_PARAM_NONE "PARAM -> none"
 #define PRO_GET "S' -> get ( ID ) ;"
 #define PRO_PUT "S' -> put ( ID ) ;"
 #define PRO_ID_ID "ID -> A ID'"
@@ -80,6 +90,11 @@ vector<string>
         PRO_BEGIN,
         PRO_BLOCK,
         PRO_DECLARE,
+        PRO_DEC_FUNCT,
+        PRO_DEC_IDENT,
+        PRO_PARAM,
+        PRO_PARAM_SPLIT,
+        PRO_PARAM_NONE,
         PRO_EQUAL,
         PRO_EXP_ADD,
         PRO_EXP_AND,
