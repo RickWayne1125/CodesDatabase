@@ -27,10 +27,6 @@ bool CompareMap(const std::map<K, V> &map1, const std::map<K, V> &map2)
         }
         else
         {
-            // if (0 != memcmp(&it1.second, &it2->second, sizeof(V)))
-            // {
-            //     return false;
-            // }
             if (it1.second.size() != it2->second.size())
             {
                 return false;
@@ -54,7 +50,7 @@ void Draw_line(vector<int> max, int columns)
 }
 
 void Draw_Datas(vector<int> max, vector<vector<string>> Str, vector<string> D, int columns, int row)
-{ //显示构造过程，状态转换矩阵
+{ 
     Draw_line(max, columns);
     for (int i = 0; i < D.size(); i++)
     {

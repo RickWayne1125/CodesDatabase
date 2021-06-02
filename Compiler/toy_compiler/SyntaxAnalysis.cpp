@@ -9,10 +9,10 @@ using namespace std;
 
 struct SynError
 {
-    int line;    // é”™è¯¯æ‰€åœ¨è¡Œæ•°
-    string type; // é”™è¯¯ç±»å‹
-    string x;    // é”™è¯¯æ ˆé¡¶ç¬¦å·
-    string a;    // é”™è¯¯è¾“å…¥ç¬¦å·
+    int line;    // ´íÎóËùÔÚĞĞÊı
+    string type; // ´íÎóÀàĞÍ
+    string x;    // ´íÎóÕ»¶¥·ûºÅ
+    string a;    // ´íÎóÊäÈë·ûºÅ
     SynError(int l, string type, string x, string a)
     {
         this->line = l;
@@ -29,10 +29,10 @@ struct SynError
 struct ASTNode
 {
     ASTNode *parent;
-    // ASTNode *next_sibling;      // ä¸‹ä¸€ä¸ªå…„å¼ŸèŠ‚ç‚¹
-    int code;                   // æ¯ä¸ªèŠ‚ç‚¹çš„å”¯ä¸€æ ‡è¯†ç¬¦
-    vector<ASTNode *> children; // å­èŠ‚ç‚¹
-    string label;               // å¯¹åº”ç»ˆç»“ç¬¦/éç»ˆç»“ç¬¦
+    // ASTNode *next_sibling;      // ÏÂÒ»¸öĞÖµÜ½Úµã
+    int code;                   // Ã¿¸ö½ÚµãµÄÎ¨Ò»±êÊ¶·û
+    vector<ASTNode *> children; // ×Ó½Úµã
+    string label;               // ¶ÔÓ¦ÖÕ½á·û/·ÇÖÕ½á·û
     void set(string l, int c)
     {
         this->label = l;
@@ -102,14 +102,14 @@ private:
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack;     // åˆ†ææ ˆ
-    vector<string> buffer;       // è¾“å…¥ç¼“å†²åŒº
-    vector<SynError> error_list; // å‡ºç°é”™è¯¯çš„è¾“å…¥ä¸²ä¸­çš„ç¬¦å·
-    ASTNode *root;               // è¯­æ³•åˆ†ææ ‘æ ¹èŠ‚ç‚¹
-    AST tree;                    // è¯­æ³•åˆ†ææ ‘
-    vector<production> history;  // äº§ç”Ÿå¼ä½¿ç”¨è®°å½•
-    int index;                   // äº§ç”Ÿå¼ä½¿ç”¨å†å²ä¸‹æ ‡
-    int code;                    // å½“å‰èŠ‚ç‚¹ç¼–ç 
+    stack<string> ana_stack;     // ·ÖÎöÕ»
+    vector<string> buffer;       // ÊäÈë»º³åÇø
+    vector<SynError> error_list; // ³öÏÖ´íÎóµÄÊäÈë´®ÖĞµÄ·ûºÅ
+    ASTNode *root;               // Óï·¨·ÖÎöÊ÷¸ù½Úµã
+    AST tree;                    // Óï·¨·ÖÎöÊ÷
+    vector<production> history;  // ²úÉúÊ½Ê¹ÓÃ¼ÇÂ¼
+    int index;                   // ²úÉúÊ½Ê¹ÓÃÀúÊ·ÏÂ±ê
+    int code;                    // µ±Ç°½Úµã±àÂë
 
 public:
     LL1(vector<string> tl, vector<node> e)
@@ -144,8 +144,8 @@ public:
         vector<production> pro = pros[left];
         for (int i = 0; i < pro.size(); ++i)
         {
-            string cur_symbol = pro[i].right[0]; // äº§ç”Ÿå¼å³ä¾§ç¬¬ä¸€ä¸ªç¬¦å·
-            // è‹¥è¯¥ç¬¦å·ä¸ºç»ˆç»“ç¬¦
+            string cur_symbol = pro[i].right[0]; // ²úÉúÊ½ÓÒ²àµÚÒ»¸ö·ûºÅ
+            // Èô¸Ã·ûºÅÎªÖÕ½á·û
             if (isTERMINAL(cur_symbol))
             {
                 first_map[left].insert(cur_symbol);
@@ -155,18 +155,18 @@ public:
                 insertFIRST(left, cur_symbol);
                 for (size_t j = 0; j < pro[i].right.size(); j++)
                 {
-                    // å½“å‰ç¬¦å·å¯ä»¥æŒ‡å‘ç©ºæ—¶
-                    // Y1...Yj-1 -> none åˆ™ FIRST(Yj)åŠ å…¥FIRST(X)
-                    int flag = 0;                           // è¡¨ç¤ºå½“å‰ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘none
+                    // µ±Ç°·ûºÅ¿ÉÒÔÖ¸Ïò¿ÕÊ±
+                    // Y1...Yj-1 -> none Ôò FIRST(Yj)¼ÓÈëFIRST(X)
+                    int flag = 0;                           // ±íÊ¾µ±Ç°·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïònone
                     for (auto iter : pros[pro[i].right[j]]) // production iter
                     {
                         if (iter.right[0] == "none")
                         {
                             if (j != pro[i].right.size() - 1)
                                 insertFIRST(left, pro[i].right[j + 1]);
-                            else // å¯¹äºäº§ç”Ÿå¼æ–‡æœ«ç¬¦å·
+                            else // ¶ÔÓÚ²úÉúÊ½ÎÄÄ©·ûºÅ
                             {
-                                first_map[left].insert("none"); // å°†noneåŠ å…¥FIRST(X)
+                                first_map[left].insert("none"); // ½«none¼ÓÈëFIRST(X)
                             }
                             flag = 1;
                             break;
@@ -174,7 +174,7 @@ public:
                     }
                     if (flag == 0)
                     {
-                        break; // è‹¥å½“å‰ç¬¦å·ä¸å¯æŒ‡å‘noneåˆ™ä¸å†ç»§ç»­åˆ¤æ–­
+                        break; // Èôµ±Ç°·ûºÅ²»¿ÉÖ¸ÏònoneÔò²»ÔÙ¼ÌĞøÅĞ¶Ï
                     }
                 }
             }
@@ -184,7 +184,7 @@ public:
     void insertFOLLOWbyFIRST(string b, string a)
     {
         // cout << "insert first of " << a << " to " << b << endl;
-        // å°†FIRST(a)-noneæ”¾å…¥FOLLOW(b)
+        // ½«FIRST(a)-none·ÅÈëFOLLOW(b)
         for (auto iter : first_map[a])
         {
             if (iter != "none")
@@ -197,7 +197,7 @@ public:
     void insertFOLLOWbyFOLLOW(string b, string a)
     {
         // cout << "insert follow of " << a << " to " << b << endl;
-        // å°†FOLLOW(a)æ”¾å…¥FOLLOW(b)
+        // ½«FOLLOW(a)·ÅÈëFOLLOW(b)
         for (auto iter : follow_map[a])
         {
             follow_map[b].insert(iter);
@@ -206,29 +206,29 @@ public:
 
     void getFOLLOW(production p)
     {
-        int flag = 0; // è¡¨ç¤ºåç»§ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘ç©º
+        int flag = 0; // ±íÊ¾ºó¼Ì·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïò¿Õ
         for (int i = p.right.size() - 1; i >= 0; i--)
         {
             string cur_symbol = p.right[i];
             if (isNON_TERMINAL(cur_symbol))
             {
-                // å½“ä¸Šä¸€ä¸ªç¬¦å·å¯ä»¥æŒ‡å‘ç©ºæ—¶ï¼Œå°†FOLLOW(A)æ”¾å…¥FOLLOW(B)
+                // µ±ÉÏÒ»¸ö·ûºÅ¿ÉÒÔÖ¸Ïò¿ÕÊ±£¬½«FOLLOW(A)·ÅÈëFOLLOW(B)
                 if (flag == 1)
                 {
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
                 flag = 0;
-                // å¯¹äºäº§ç”Ÿå¼æœ€åä¸€ä¸ªéç»ˆç»“ç¬¦Bï¼Œå°†FOLLOW(A)æ”¾å…¥FOLLOW(B)
+                // ¶ÔÓÚ²úÉúÊ½×îºóÒ»¸ö·ÇÖÕ½á·ûB£¬½«FOLLOW(A)·ÅÈëFOLLOW(B)
                 if (i == p.right.size() - 1)
                 {
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
-                // å¯¹äºA->aBbçš„äº§ç”Ÿå¼ï¼Œå°†FIRST(b)-noneåŠ å…¥FOLLOW(B)
+                // ¶ÔÓÚA->aBbµÄ²úÉúÊ½£¬½«FIRST(b)-none¼ÓÈëFOLLOW(B)
                 else
                 {
                     insertFOLLOWbyFIRST(cur_symbol, p.right[i + 1]);
                 }
-                // åˆ¤æ–­å½“å‰ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘ç©º
+                // ÅĞ¶Ïµ±Ç°·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïò¿Õ
                 for (auto iter : pros[cur_symbol])
                 {
                     if (iter.right[0] == "none")
@@ -240,7 +240,7 @@ public:
             }
             else if (isTERMINAL(cur_symbol))
             {
-                // ç»ˆç»“ç¬¦ä¸èƒ½æŒ‡å‘ç©º
+                // ÖÕ½á·û²»ÄÜÖ¸Ïò¿Õ
                 flag = 0;
             }
         }
@@ -252,11 +252,11 @@ public:
         {
             production p(iter);
             if (pros.find(p.left) != pros.end())
-            { // mapä¸­å·²ç»å­˜æœ‰keyçš„æƒ…å†µ
+            { // mapÖĞÒÑ¾­´æÓĞkeyµÄÇé¿ö
                 pros[p.left].push_back(p);
             }
             else
-            { // mapä¸­ä¸å­˜åœ¨keyçš„æƒ…å†µ
+            { // mapÖĞ²»´æÔÚkeyµÄÇé¿ö
                 vector<production> temp;
                 temp.push_back(p);
                 pros.insert(pair<string, vector<production>>(p.left, temp));
@@ -264,16 +264,16 @@ public:
         }
     }
 
-    void getFIRSTset() // ç”ŸæˆFIRSTé›†çš„map
+    void getFIRSTset() // Éú³ÉFIRST¼¯µÄmap
     {
-        // ç”Ÿæˆéç»ˆç»“ç¬¦åœ¨first_mapä¸­çš„å¯¹åº”ä½ç½®
+        // Éú³É·ÇÖÕ½á·ûÔÚfirst_mapÖĞµÄ¶ÔÓ¦Î»ÖÃ
         for (auto iter : NON_TERMINAL_LIST)
         {
             string left = iter;
             set<string> temp;
             first_map.insert(pair<string, set<string>>(left, temp));
         }
-        // ç”Ÿæˆç»ˆç»“ç¬¦çš„FIRSTé›†
+        // Éú³ÉÖÕ½á·ûµÄFIRST¼¯
         for (auto iter : TERMINAL_LIST)
         {
             string left = iter;
@@ -281,7 +281,7 @@ public:
             temp.insert(left);
             first_map.insert(pair<string, set<string>>(left, temp));
         }
-        // ç”ŸæˆFIRSTé›†
+        // Éú³ÉFIRST¼¯
         for (auto iter : pros)
         {
             if (first_map[iter.first].size() == 0)
@@ -293,7 +293,7 @@ public:
 
     void getFOLLOWset()
     {
-        // ç”Ÿæˆéç»ˆç»“ç¬¦åœ¨follow_mapä¸­å¯¹åº”çš„ä½ç½®
+        // Éú³É·ÇÖÕ½á·ûÔÚfollow_mapÖĞ¶ÔÓ¦µÄÎ»ÖÃ
         for (auto iter : NON_TERMINAL_LIST)
         {
             set<string> temp;
@@ -302,7 +302,7 @@ public:
             follow_map.insert(pair<string, set<string>>(iter, temp));
         }
         map<string, set<string>> comp;
-        // éå†äº§ç”Ÿå¼ï¼Œæ±‚FOLLOWé›†ï¼Œç›´åˆ°é›†åˆä¸å†å˜åŒ–
+        // ±éÀú²úÉúÊ½£¬ÇóFOLLOW¼¯£¬Ö±µ½¼¯ºÏ²»ÔÙ±ä»¯
         do
         {
             comp = follow_map;
@@ -317,9 +317,9 @@ public:
         } while (!(CompareMap(comp, follow_map)));
     }
 
-    bool check() // æ£€æŸ¥æ˜¯å¦ç¬¦åˆæ–‡æ³•è§„åˆ™
+    bool check() // ¼ì²éÊÇ·ñ·ûºÏÎÄ·¨¹æÔò
     {
-        // æ˜¯å¦ä¸å«å·¦é€’å½’
+        // ÊÇ·ñ²»º¬×óµİ¹é
         for (auto iter : pros)
         {
             for (auto p : iter.second)
@@ -328,7 +328,7 @@ public:
                     return false;
             }
         }
-        // ç»ˆç»“ç¬¦é›†æ˜¯å¦ä¸¤ä¸¤ä¸ç›¸äº¤
+        // ÖÕ½á·û¼¯ÊÇ·ñÁ½Á½²»Ïà½»
     }
 
     void analysis()
@@ -339,7 +339,7 @@ public:
         {
             while (!ana_stack.empty())
             {
-                string a = e.terminal; // è¾“å…¥ç¬¦å·a
+                string a = e.terminal; // ÊäÈë·ûºÅa
                 while (!ana_stack.empty() && ana_stack.top() == "none")
                 {
                     cout << "Replace None" << endl;
@@ -347,7 +347,7 @@ public:
                 }
                 if (ana_stack.empty())
                     break;
-                string x = ana_stack.top(); // æ ˆé¡¶ç¬¦å·x
+                string x = ana_stack.top(); // Õ»¶¥·ûºÅx
                 stack<string> temp = ana_stack;
                 cout << "x: " << x << ", a: " << a << endl;
                 cout << "stack: ";
@@ -371,8 +371,8 @@ public:
                         {
                             cout << "TokenMatchError" << endl;
                             // throw("GrammerError");
-                            SynError e(e.line, "TokenMatchError", x, a);
-                            error_list.push_back(e);
+                            SynError error(e.line, "TokenMatchError", x, a);
+                            error_list.push_back(error);
                             ana_stack.pop();
                         }
                     }
@@ -392,16 +392,16 @@ public:
                         else
                         {
                             cout << "ProductionMatchError" << endl;
-                            SynError e(e.line, "ProductionMatchError", x, a);
-                            error_list.push_back(e);
+                            SynError error(e.line, "ProductionMatchError", x, a);
+                            error_list.push_back(error);
                             ana_stack.pop();
                         }
                     }
                     else
                     {
-                        cout << "TokenError" << endl;
+                        cout << "TokenMatchError" << endl;
                         // throw("GrammerError");
-                        SynError e(e.line, "TokenError", x, a);
+                        SynError e(e.line, "TokenMatchError", x, a);
                         error_list.push_back(e);
                         break;
                     }
@@ -434,11 +434,13 @@ public:
     {
         if (pre_table[n][t].str == "")
             pre_table[n][t] = p;
+        else if(pre_table[n][t].right[0]=="none")
+            pre_table[n][t] = p;
     }
 
     void getPredictTable()
     {
-        // åˆå§‹åŒ–é¢„æµ‹åˆ†æè¡¨
+        // ³õÊ¼»¯Ô¤²â·ÖÎö±í
         for (auto non_terminal : NON_TERMINAL_LIST)
         {
 
@@ -450,7 +452,7 @@ public:
             }
             pre_table.insert(pair<string, map<string, production>>(non_terminal, t_p));
         }
-        // æ„å»ºé¢„æµ‹åˆ†æè¡¨
+        // ¹¹½¨Ô¤²â·ÖÎö±í
         for (auto iter : pros)
         {
             for (auto p : iter.second)
@@ -459,12 +461,11 @@ public:
                 {
                     if (p.right[0] != "none")
                     {
-                        cout << p.right[0] << endl;
                         insertPredictTable(p.left, p.right[0], p);
                     }
                     else
                     {
-                        // éå†å·¦éƒ¨FOLLOWé›†
+                        // ±éÀú×ó²¿FOLLOW¼¯
                         for (auto follow : follow_map[p.left])
                         {
                             insertPredictTable(p.left, follow, p);
@@ -473,7 +474,7 @@ public:
                 }
                 else if (isNON_TERMINAL(p.right[0]))
                 {
-                    // éå†é¦–éƒ¨éç»ˆç»“ç¬¦FIRSTé›†
+                    // ±éÀúÊ×²¿·ÇÖÕ½á·ûFIRST¼¯
                     for (auto first : first_map[p.right[0]])
                     {
                         insertPredictTable(p.left, first, p);
@@ -553,24 +554,24 @@ public:
             }
             cout << "}" << endl;
         }
-        // è¾“å‡ºé¢„æµ‹åˆ†æè¡¨
-        // åˆ—æ•°&è¡Œæ•°
+        // Êä³öÔ¤²â·ÖÎö±í
+        // ÁĞÊı&ĞĞÊı
         int row = NON_TERMINAL_LIST.size();
         int col = TERMINAL_LIST.size() + 1;
-        // æ„é€ è¡¨å¤´
+        // ¹¹Ôì±íÍ·
         vector<string> D;
         D.push_back(" ");
         for (auto iter : TERMINAL_LIST)
         {
             D.push_back(iter);
         }
-        // æ„é€ åˆ—å¤´
+        // ¹¹ÔìÁĞÍ·
         vector<string> R;
         for (auto iter : NON_TERMINAL_LIST)
         {
             R.push_back(iter);
         }
-        // æ„é€ æœ€å¤§åˆ—å®½
+        // ¹¹Ôì×î´óÁĞ¿í
         vector<int> max;
         max.push_back(5);
         for (auto i : TERMINAL_LIST)
@@ -583,21 +584,21 @@ public:
             }
             max.push_back(maxlen);
         }
-        // æ„é€ è¡¨æ•°æ®
+        // ¹¹Ôì±íÊı¾İ
         vector<vector<string>> Str;
         for (int i = 0; i < row; i++)
         {
             vector<string> temp;
-            string n = R[i]; // éç»ˆç»“ç¬¦
+            string n = R[i]; // ·ÇÖÕ½á·û
             temp.push_back(n);
             for (int j = 1; j < col; j++)
             {
-                string t = D[j]; // ç»ˆç»“ç¬¦
+                string t = D[j]; // ÖÕ½á·û
                 temp.push_back(pre_table[n][t].str);
             }
             Str.push_back(temp);
         }
-        // ç»˜åˆ¶é¢„æµ‹åˆ†æè¡¨
+        // »æÖÆÔ¤²â·ÖÎö±í
         Draw_Datas(max, Str, D, col, row);
 
         // for (auto i : history)
