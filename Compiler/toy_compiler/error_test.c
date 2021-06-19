@@ -4,12 +4,14 @@ int funct1(int x, int y{
     b = 0;
     int i;
     int ans;
+    bool bl;
     while (a = x + y)
     {
         ans = a b;
-        x = x + 1;
+        x = x + ;
+        i = a + bl;
     };
     return ans;
 };
-int ans;
+bool ans;
 ans = funct1(int b int a)

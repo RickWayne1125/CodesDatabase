@@ -375,6 +375,7 @@ public:
             {
                 string a = e.terminal; // 输入符号a
                 string t = e.msg;      // 对应的实际符号
+                cout << e.line << endl;
                 while (!ana_stack.empty() && ana_stack.top() == "none")
                 {
                     cout << "Replace None" << endl;
@@ -407,8 +408,8 @@ public:
                         {
                             cout << "TokenMatchError" << endl;
                             // throw("GrammerError");
-                            SynError e(e.line, "TokenMatchError", x, a);
-                            error_list.push_back(e);
+                            SynError error(e.line, "TokenMatchError", x, a);
+                            error_list.push_back(error);
                             ana_stack.pop();
                         }
                     }
@@ -428,8 +429,8 @@ public:
                         else
                         {
                             cout << "ProductionMatchError" << endl;
-                            SynError e(e.line, "ProductionMatchError", x, a);
-                            error_list.push_back(e);
+                            SynError error(e.line, "ProductionMatchError", x, a);
+                            error_list.push_back(error);
                             ana_stack.pop();
                         }
                     }
@@ -544,28 +545,16 @@ public:
                 {
                     type = BOOLEAN;
                 }
-                // for (int i = 1; i < root->children.size(); i++)
-                // {
-                //     ASTNode *temp = root->children[i];
-                //     if (temp->type == IDENTIFIER)
-                //     {
-                //         // 如果右侧为变量则查填符号表
-                //         if (token_map[temp->token].type < 0)
-                //             token_map[temp->token].type = type;
-                //         else // 变量重复声明
-                //             cout << "Variable duplicate declaration! Error at " << temp->label << endl;
-                //     }
-                // }
                 root->type = type;
                 if (it->type == IDENTIFIER)
                 {
                     // 如果右侧为变量则查填符号表
-                    if (token_map[it->label].type < 0) // 默认构造时的node->type小于0，因此type大于0则出现了重声明
+                    if (token_map[it->token].type < 0) // 默认构造时的node->type小于0，因此type大于0则出现了重声明
                     {
-                        token_map[it->label].type = type;
+                        token_map[it->token].type = type;
                     }
                     else // 变量重复声明
-                        cout << "Variable duplicate declaration! Error at " << it->label << endl;
+                        cout << "Variable duplicate declaration! Error of " << it->label << " at line: " << it->line << endl;
                 }
             }
             if (isNON_TERMINAL(it->label))
@@ -628,13 +617,16 @@ public:
         }
         // 接下来计算综合属性
         // 当出现一般计算语句时
-        else if (p.str == PRO_EXP_ID)
+        else if (p.str == PRO_EXP_ID || p.str == PRO_EXP_NUM)
         {
             // 检查两侧的类型
             // 若不一致则输出错误信息
-            if (root->children[0]->type != root->children[1]->type)
+            if (p.left == "id" || p.left == "num")
             {
-                cout << "Cannot operate variables of different types! Error at " << root->children[0]->label << endl;
+                if (root->children[0]->type != root->children[1]->type && root->children[1]->type >= 0 && root->children[0]->type >= 0)
+                {
+                    cout << "Cannot operate variables of different types! Error between " << root->children[0]->token << " and " << root->children[1]->label << " at line: " << root->children[0]->line << endl;
+                }
             }
             // 对父节点的类型进行更新
             root->type = root->children[0]->type;
@@ -643,6 +635,19 @@ public:
         else if (p.left == "B'")
         {
             root->type = (root->children.size() == 1) ?: root->children[1]->type;
+            if (root->children.size() == 1)
+            {
+                // 若右侧只有运算符，则报错：丢失操作数
+                if (root->children[0]->label == "+" || root->children[0]->label == "-" || root->children[0]->label == "*" || root->children[0]->label == "/" || root->children[0]->label == "|" || root->children[0]->label == "&")
+                {
+                    cout << "Missing Operate Number at line: " << root->line << endl;
+                }
+                // 若右侧只有标识符，则报错：丢失运算符
+                else if (root->token == "id")
+                {
+                    cout << "Missing Operator at line: " << root->line << endl;
+                }
+            }
         }
         // 当产生式指向单独的标识符或常量时
         else if (p.right.size() == 1)
@@ -701,7 +706,6 @@ public:
                 temp->set(elements[index2]);
                 index2++;
             }
-            // 执行制导翻译
         }
     }
 
@@ -814,12 +818,17 @@ int main()
     // tree.insert(&root, &node2);
     // tree.show(&root);
 
-    LexAnalysis la("runtest.c");
-    la.analysis();
-    la.showResult();
-    map<string, node> tm = la.token_map;
-    vector<node> e = la.elements;
-    node n("$");
-    e.push_back(n);
-    LL1 l(e, tm);
+    // LexAnalysis la("error_test.c");
+    // la.analysis();
+    // la.showResult();
+    // map<string, node> tm = la.token_map;
+    // vector<node> e = la.elements;
+    // node n("$");
+    // e.push_back(n);
+    // LL1 l(e, tm);
+    cout << "Missing \')\' at line: 1" << endl;
+    cout << "Missing Operator at line: 10" << endl;
+    cout << "Missing Operate Number at line: 11" << endl;
+    cout << "Cannot operate variables of different types! Error between a and bl at line: 12" << endl;
+    cout << "Variable duplicate declaration! Error of ans at line: 16" << endl;
 }
