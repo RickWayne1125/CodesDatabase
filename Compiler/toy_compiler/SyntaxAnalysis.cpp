@@ -9,10 +9,10 @@ using namespace std;
 
 struct SynError
 {
-    int line;    // é”™è¯¯æ‰€åœ¨è¡Œæ•°
-    string type; // é”™è¯¯ç±»å‹
-    string x;    // é”™è¯¯æ ˆé¡¶ç¬¦å·
-    string a;    // é”™è¯¯è¾“å…¥ç¬¦å·
+    int line;    // ´íÎóËùÔÚĞĞÊı
+    string type; // ´íÎóÀàĞÍ
+    string x;    // ´íÎóÕ»¶¥·ûºÅ
+    string a;    // ´íÎóÊäÈë·ûºÅ
     SynError(int l, string type, string x, string a)
     {
         this->line = l;
@@ -29,15 +29,16 @@ struct SynError
 struct ASTNode
 {
     ASTNode *parent;
-    // ASTNode *next_sibling;      // ä¸‹ä¸€ä¸ªå…„å¼ŸèŠ‚ç‚¹
-    int code;                   // æ¯ä¸ªèŠ‚ç‚¹çš„å”¯ä¸€æ ‡è¯†ç¬¦
-    vector<ASTNode *> children; // å­èŠ‚ç‚¹
-    string label;               // å¯¹åº”ç»ˆç»“ç¬¦/éç»ˆç»“ç¬¦
-    // è¯­æ³•åˆ¶å¯¼ç¿»è¯‘æ‰€éœ€å±æ€§
-    string token;  // ä¸ºç»ˆç»“ç¬¦æ—¶çš„æ ‡å¿—ï¼ŒåŒæ—¶ä¹Ÿå¯ä»¥ä½œä¸ºç¬¦å·è¡¨å…¥å£æŒ‡å‘token mapä¸­çš„ä½ç½®
-    int type;      // è¯¥èŠ‚ç‚¹æ‰€è¡¨ç¤ºçš„ç±»å‹
-    int int_val;   // è¯¥èŠ‚ç‚¹çš„æ•´å‹å€¼
-    bool bool_val; // è¯¥èŠ‚ç‚¹çš„å¸ƒå°”å€¼
+    // ASTNode *next_sibling;      // ÏÂÒ»¸öĞÖµÜ½Úµã
+    int code;                   // Ã¿¸ö½ÚµãµÄÎ¨Ò»±êÊ¶·û
+    vector<ASTNode *> children; // ×Ó½Úµã
+    string label;               // ¶ÔÓ¦ÖÕ½á·û/·ÇÖÕ½á·û
+    // Óï·¨ÖÆµ¼·­ÒëËùĞèÊôĞÔ
+    string token;  // ÎªÖÕ½á·ûÊ±µÄ±êÖ¾£¬Í¬Ê±Ò²¿ÉÒÔ×÷Îª·ûºÅ±íÈë¿ÚÖ¸Ïòtoken mapÖĞµÄÎ»ÖÃ
+    int type;      // ¸Ã½ÚµãËù±íÊ¾µÄÀàĞÍ
+    int int_val;   // ¸Ã½ÚµãµÄÕûĞÍÖµ
+    bool bool_val; // ¸Ã½ÚµãµÄ²¼¶ûÖµ
+    int line;      // ¸Ã½ÚµãËùÔÚĞĞÊı
 
     void set(string l, int c, string t = "")
     {
@@ -55,6 +56,7 @@ struct ASTNode
     {
         this->token = element.msg;
         this->type = element.value;
+        this->line = element.line;
     }
     void setValue(int i)
     {
@@ -121,29 +123,29 @@ public:
 class LL1
 {
 private:
-    vector<string> token_list;
+    // vector<string> token_list;
     map<string, node> token_map;
     vector<node> elements;
     map<string, set<string>> first_map;
     map<string, set<string>> follow_map;
     map<string, vector<production>> pros; // map<non terminal symbol on the left, production>
     map<string, map<string, production>> pre_table;
-    stack<string> ana_stack;     // åˆ†ææ ˆ
-    vector<string> buffer;       // è¾“å…¥ç¼“å†²åŒº
-    vector<SynError> error_list; // å‡ºç°é”™è¯¯çš„è¾“å…¥ä¸²ä¸­çš„ç¬¦å·
-    ASTNode *root;               // è¯­æ³•åˆ†ææ ‘æ ¹èŠ‚ç‚¹
-    AST tree;                    // è¯­æ³•åˆ†ææ ‘
-    vector<production> history;  // äº§ç”Ÿå¼ä½¿ç”¨è®°å½•
-    int index;                   // äº§ç”Ÿå¼ä½¿ç”¨å†å²ä¸‹æ ‡
-    int code;                    // å½“å‰èŠ‚ç‚¹ç¼–ç 
-    // è¯­æ³•åˆ¶å¯¼ç¿»è¯‘æ‰€éœ€å±æ€§
-    vector<string> terminal_history; // ç»ˆç»“ç¬¦åŒ¹é…å†å²
-    int index2;                      // ç»ˆç»“ç¬¦ä¸‹æ ‡
+    stack<string> ana_stack;     // ·ÖÎöÕ»
+    vector<string> buffer;       // ÊäÈë»º³åÇø
+    vector<SynError> error_list; // ³öÏÖ´íÎóµÄÊäÈë´®ÖĞµÄ·ûºÅ
+    ASTNode *root;               // Óï·¨·ÖÎöÊ÷¸ù½Úµã
+    AST tree;                    // Óï·¨·ÖÎöÊ÷
+    vector<production> history;  // ²úÉúÊ½Ê¹ÓÃ¼ÇÂ¼
+    int index;                   // ²úÉúÊ½Ê¹ÓÃÀúÊ·ÏÂ±ê
+    int code;                    // µ±Ç°½Úµã±àÂë
+    // Óï·¨ÖÆµ¼·­ÒëËùĞèÊôĞÔ
+    vector<string> terminal_history; // ÖÕ½á·ûÆ¥ÅäÀúÊ·
+    int index2;                      // ÖÕ½á·ûÏÂ±ê
 
 public:
-    LL1(vector<string> tl, vector<node> e, map<string, node> tm)
+    LL1(vector<node> e, map<string, node> tm)
     {
-        token_list = tl;
+        // token_list = tl;
         elements = e;
         token_map = tm;
         initProduction();
@@ -152,6 +154,8 @@ public:
         getPredictTable();
         analysis();
         getASTree();
+        index = 0;
+        translate(root);
         show();
         tree.generateGRAPH();
     }
@@ -174,8 +178,8 @@ public:
         vector<production> pro = pros[left];
         for (int i = 0; i < pro.size(); ++i)
         {
-            string cur_symbol = pro[i].right[0]; // äº§ç”Ÿå¼å³ä¾§ç¬¬ä¸€ä¸ªç¬¦å·
-            // è‹¥è¯¥ç¬¦å·ä¸ºç»ˆç»“ç¬¦
+            string cur_symbol = pro[i].right[0]; // ²úÉúÊ½ÓÒ²àµÚÒ»¸ö·ûºÅ
+            // Èô¸Ã·ûºÅÎªÖÕ½á·û
             if (isTERMINAL(cur_symbol))
             {
                 first_map[left].insert(cur_symbol);
@@ -185,18 +189,18 @@ public:
                 insertFIRST(left, cur_symbol);
                 for (size_t j = 0; j < pro[i].right.size(); j++)
                 {
-                    // å½“å‰ç¬¦å·å¯ä»¥æŒ‡å‘ç©ºæ—¶
-                    // Y1...Yj-1 -> none åˆ™ FIRST(Yj)åŠ å…¥FIRST(X)
-                    int flag = 0;                           // è¡¨ç¤ºå½“å‰ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘none
+                    // µ±Ç°·ûºÅ¿ÉÒÔÖ¸Ïò¿ÕÊ±
+                    // Y1...Yj-1 -> none Ôò FIRST(Yj)¼ÓÈëFIRST(X)
+                    int flag = 0;                           // ±íÊ¾µ±Ç°·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïònone
                     for (auto iter : pros[pro[i].right[j]]) // production iter
                     {
                         if (iter.right[0] == "none")
                         {
                             if (j != pro[i].right.size() - 1)
                                 insertFIRST(left, pro[i].right[j + 1]);
-                            else // å¯¹äºäº§ç”Ÿå¼æ–‡æœ«ç¬¦å·
+                            else // ¶ÔÓÚ²úÉúÊ½ÎÄÄ©·ûºÅ
                             {
-                                first_map[left].insert("none"); // å°†noneåŠ å…¥FIRST(X)
+                                first_map[left].insert("none"); // ½«none¼ÓÈëFIRST(X)
                             }
                             flag = 1;
                             break;
@@ -204,7 +208,7 @@ public:
                     }
                     if (flag == 0)
                     {
-                        break; // è‹¥å½“å‰ç¬¦å·ä¸å¯æŒ‡å‘noneåˆ™ä¸å†ç»§ç»­åˆ¤æ–­
+                        break; // Èôµ±Ç°·ûºÅ²»¿ÉÖ¸ÏònoneÔò²»ÔÙ¼ÌĞøÅĞ¶Ï
                     }
                 }
             }
@@ -214,7 +218,7 @@ public:
     void insertFOLLOWbyFIRST(string b, string a)
     {
         // cout << "insert first of " << a << " to " << b << endl;
-        // å°†FIRST(a)-noneæ”¾å…¥FOLLOW(b)
+        // ½«FIRST(a)-none·ÅÈëFOLLOW(b)
         for (auto iter : first_map[a])
         {
             if (iter != "none")
@@ -227,7 +231,7 @@ public:
     void insertFOLLOWbyFOLLOW(string b, string a)
     {
         // cout << "insert follow of " << a << " to " << b << endl;
-        // å°†FOLLOW(a)æ”¾å…¥FOLLOW(b)
+        // ½«FOLLOW(a)·ÅÈëFOLLOW(b)
         for (auto iter : follow_map[a])
         {
             follow_map[b].insert(iter);
@@ -236,29 +240,29 @@ public:
 
     void getFOLLOW(production p)
     {
-        int flag = 0; // è¡¨ç¤ºåç»§ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘ç©º
+        int flag = 0; // ±íÊ¾ºó¼Ì·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïò¿Õ
         for (int i = p.right.size() - 1; i >= 0; i--)
         {
             string cur_symbol = p.right[i];
             if (isNON_TERMINAL(cur_symbol))
             {
-                // å½“ä¸Šä¸€ä¸ªç¬¦å·å¯ä»¥æŒ‡å‘ç©ºæ—¶ï¼Œå°†FOLLOW(A)æ”¾å…¥FOLLOW(B)
+                // µ±ÉÏÒ»¸ö·ûºÅ¿ÉÒÔÖ¸Ïò¿ÕÊ±£¬½«FOLLOW(A)·ÅÈëFOLLOW(B)
                 if (flag == 1)
                 {
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
                 flag = 0;
-                // å¯¹äºäº§ç”Ÿå¼æœ€åä¸€ä¸ªéç»ˆç»“ç¬¦Bï¼Œå°†FOLLOW(A)æ”¾å…¥FOLLOW(B)
+                // ¶ÔÓÚ²úÉúÊ½×îºóÒ»¸ö·ÇÖÕ½á·ûB£¬½«FOLLOW(A)·ÅÈëFOLLOW(B)
                 if (i == p.right.size() - 1)
                 {
                     insertFOLLOWbyFOLLOW(cur_symbol, p.left);
                 }
-                // å¯¹äºA->aBbçš„äº§ç”Ÿå¼ï¼Œå°†FIRST(b)-noneåŠ å…¥FOLLOW(B)
+                // ¶ÔÓÚA->aBbµÄ²úÉúÊ½£¬½«FIRST(b)-none¼ÓÈëFOLLOW(B)
                 else
                 {
                     insertFOLLOWbyFIRST(cur_symbol, p.right[i + 1]);
                 }
-                // åˆ¤æ–­å½“å‰ç¬¦å·æ˜¯å¦å¯ä»¥æŒ‡å‘ç©º
+                // ÅĞ¶Ïµ±Ç°·ûºÅÊÇ·ñ¿ÉÒÔÖ¸Ïò¿Õ
                 for (auto iter : pros[cur_symbol])
                 {
                     if (iter.right[0] == "none")
@@ -270,7 +274,7 @@ public:
             }
             else if (isTERMINAL(cur_symbol))
             {
-                // ç»ˆç»“ç¬¦ä¸èƒ½æŒ‡å‘ç©º
+                // ÖÕ½á·û²»ÄÜÖ¸Ïò¿Õ
                 flag = 0;
             }
         }
@@ -282,11 +286,11 @@ public:
         {
             production p(iter);
             if (pros.find(p.left) != pros.end())
-            { // mapä¸­å·²ç»å­˜æœ‰keyçš„æƒ…å†µ
+            { // mapÖĞÒÑ¾­´æÓĞkeyµÄÇé¿ö
                 pros[p.left].push_back(p);
             }
             else
-            { // mapä¸­ä¸å­˜åœ¨keyçš„æƒ…å†µ
+            { // mapÖĞ²»´æÔÚkeyµÄÇé¿ö
                 vector<production> temp;
                 temp.push_back(p);
                 pros.insert(pair<string, vector<production>>(p.left, temp));
@@ -294,16 +298,16 @@ public:
         }
     }
 
-    void getFIRSTset() // ç”ŸæˆFIRSTé›†çš„map
+    void getFIRSTset() // Éú³ÉFIRST¼¯µÄmap
     {
-        // ç”Ÿæˆéç»ˆç»“ç¬¦åœ¨first_mapä¸­çš„å¯¹åº”ä½ç½®
+        // Éú³É·ÇÖÕ½á·ûÔÚfirst_mapÖĞµÄ¶ÔÓ¦Î»ÖÃ
         for (auto iter : NON_TERMINAL_LIST)
         {
             string left = iter;
             set<string> temp;
             first_map.insert(pair<string, set<string>>(left, temp));
         }
-        // ç”Ÿæˆç»ˆç»“ç¬¦çš„FIRSTé›†
+        // Éú³ÉÖÕ½á·ûµÄFIRST¼¯
         for (auto iter : TERMINAL_LIST)
         {
             string left = iter;
@@ -311,7 +315,7 @@ public:
             temp.insert(left);
             first_map.insert(pair<string, set<string>>(left, temp));
         }
-        // ç”ŸæˆFIRSTé›†
+        // Éú³ÉFIRST¼¯
         for (auto iter : pros)
         {
             if (first_map[iter.first].size() == 0)
@@ -323,7 +327,7 @@ public:
 
     void getFOLLOWset()
     {
-        // ç”Ÿæˆéç»ˆç»“ç¬¦åœ¨follow_mapä¸­å¯¹åº”çš„ä½ç½®
+        // Éú³É·ÇÖÕ½á·ûÔÚfollow_mapÖĞ¶ÔÓ¦µÄÎ»ÖÃ
         for (auto iter : NON_TERMINAL_LIST)
         {
             set<string> temp;
@@ -332,7 +336,7 @@ public:
             follow_map.insert(pair<string, set<string>>(iter, temp));
         }
         map<string, set<string>> comp;
-        // éå†äº§ç”Ÿå¼ï¼Œæ±‚FOLLOWé›†ï¼Œç›´åˆ°é›†åˆä¸å†å˜åŒ–
+        // ±éÀú²úÉúÊ½£¬ÇóFOLLOW¼¯£¬Ö±µ½¼¯ºÏ²»ÔÙ±ä»¯
         do
         {
             comp = follow_map;
@@ -347,9 +351,9 @@ public:
         } while (!(CompareMap(comp, follow_map)));
     }
 
-    bool check() // æ£€æŸ¥æ˜¯å¦ç¬¦åˆæ–‡æ³•è§„åˆ™
+    bool check() // ¼ì²éÊÇ·ñ·ûºÏÎÄ·¨¹æÔò
     {
-        // æ˜¯å¦ä¸å«å·¦é€’å½’
+        // ÊÇ·ñ²»º¬×óµİ¹é
         for (auto iter : pros)
         {
             for (auto p : iter.second)
@@ -358,7 +362,7 @@ public:
                     return false;
             }
         }
-        // ç»ˆç»“ç¬¦é›†æ˜¯å¦ä¸¤ä¸¤ä¸ç›¸äº¤
+        // ÖÕ½á·û¼¯ÊÇ·ñÁ½Á½²»Ïà½»
     }
 
     void analysis()
@@ -369,8 +373,8 @@ public:
         {
             while (!ana_stack.empty())
             {
-                string a = e.terminal; // è¾“å…¥ç¬¦å·a
-                string t = e.msg;      // å¯¹åº”çš„å®é™…ç¬¦å·
+                string a = e.terminal; // ÊäÈë·ûºÅa
+                string t = e.msg;      // ¶ÔÓ¦µÄÊµ¼Ê·ûºÅ
                 while (!ana_stack.empty() && ana_stack.top() == "none")
                 {
                     cout << "Replace None" << endl;
@@ -378,7 +382,7 @@ public:
                 }
                 if (ana_stack.empty())
                     break;
-                string x = ana_stack.top(); // æ ˆé¡¶ç¬¦å·x
+                string x = ana_stack.top(); // Õ»¶¥·ûºÅx
                 stack<string> temp = ana_stack;
                 cout << "x: " << x << ", a: " << a << endl;
                 cout << "stack: ";
@@ -471,7 +475,7 @@ public:
 
     void getPredictTable()
     {
-        // åˆå§‹åŒ–é¢„æµ‹åˆ†æè¡¨
+        // ³õÊ¼»¯Ô¤²â·ÖÎö±í
         for (auto non_terminal : NON_TERMINAL_LIST)
         {
 
@@ -483,7 +487,7 @@ public:
             }
             pre_table.insert(pair<string, map<string, production>>(non_terminal, t_p));
         }
-        // æ„å»ºé¢„æµ‹åˆ†æè¡¨
+        // ¹¹½¨Ô¤²â·ÖÎö±í
         for (auto iter : pros)
         {
             for (auto p : iter.second)
@@ -497,7 +501,7 @@ public:
                     }
                     else
                     {
-                        // éå†å·¦éƒ¨FOLLOWé›†
+                        // ±éÀú×ó²¿FOLLOW¼¯
                         for (auto follow : follow_map[p.left])
                         {
                             insertPredictTable(p.left, follow, p);
@@ -506,7 +510,7 @@ public:
                 }
                 else if (isNON_TERMINAL(p.right[0]))
                 {
-                    // éå†é¦–éƒ¨éç»ˆç»“ç¬¦FIRSTé›†
+                    // ±éÀúÊ×²¿·ÇÖÕ½á·ûFIRST¼¯
                     for (auto first : first_map[p.right[0]])
                     {
                         insertPredictTable(p.left, first, p);
@@ -521,13 +525,49 @@ public:
         production p = history[index];
         string left = p.left;
         vector<string> right = p.right;
-        // å…ˆéå†è®¡ç®—æ¯ä¸ªå­ç»“ç‚¹çš„å±æ€§ï¼ŒåŒæ—¶ç¡®è®¤é—­åŒ…æ˜¯å¦å®Œå¤‡
-        int cnt1 = 0; // {}æ˜¯å¦å®Œå¤‡ï¼Œä¸º0è¡¨ç¤ºå®Œå¤‡
-        int cnt2 = 0; // ()æ˜¯å¦å®Œå¤‡ï¼Œä¸º0è¡¨ç¤ºå®Œå¤‡
-        int cnt3 = 0; // []æ˜¯å¦å®Œå¤‡ï¼Œä¸º0è¡¨ç¤ºå®Œå¤‡
-        // é¦–å…ˆè®¡ç®—ç»§æ‰¿å±æ€§
+        // ÏÈ±éÀú¼ÆËãÃ¿¸ö×Ó½áµãµÄÊôĞÔ£¬Í¬Ê±È·ÈÏ±Õ°üÊÇ·ñÍê±¸
+        int cnt1 = 0; // {}ÊÇ·ñÍê±¸£¬Îª0±íÊ¾Íê±¸
+        int cnt2 = 0; // ()ÊÇ·ñÍê±¸£¬Îª0±íÊ¾Íê±¸
+        int cnt3 = 0; // []ÊÇ·ñÍê±¸£¬Îª0±íÊ¾Íê±¸
+        // Ê×ÏÈ¼ÆËã¼Ì³ĞÊôĞÔ
+        int type;
         for (auto it : root->children)
         {
+            // µ±³öÏÖÉùÃ÷Óï¾äÊ±
+            if (p.right[0] == "type")
+            {
+                if (root->children[0]->token == "int")
+                {
+                    type = INTEGER;
+                }
+                else if (root->children[0]->token == "bool")
+                {
+                    type = BOOLEAN;
+                }
+                // for (int i = 1; i < root->children.size(); i++)
+                // {
+                //     ASTNode *temp = root->children[i];
+                //     if (temp->type == IDENTIFIER)
+                //     {
+                //         // Èç¹ûÓÒ²àÎª±äÁ¿Ôò²éÌî·ûºÅ±í
+                //         if (token_map[temp->token].type < 0)
+                //             token_map[temp->token].type = type;
+                //         else // ±äÁ¿ÖØ¸´ÉùÃ÷
+                //             cout << "Variable duplicate declaration! Error at " << temp->label << endl;
+                //     }
+                // }
+                root->type = type;
+                if (it->type == IDENTIFIER)
+                {
+                    // Èç¹ûÓÒ²àÎª±äÁ¿Ôò²éÌî·ûºÅ±í
+                    if (token_map[it->label].type < 0) // Ä¬ÈÏ¹¹ÔìÊ±µÄnode->typeĞ¡ÓÚ0£¬Òò´Ëtype´óÓÚ0Ôò³öÏÖÁËÖØÉùÃ÷
+                    {
+                        token_map[it->label].type = type;
+                    }
+                    else // ±äÁ¿ÖØ¸´ÉùÃ÷
+                        cout << "Variable duplicate declaration! Error at " << it->label << endl;
+                }
+            }
             if (isNON_TERMINAL(it->label))
             {
                 ASTNode *temp = it;
@@ -564,73 +604,47 @@ public:
         }
         if (cnt1 > 0)
         {
-            cout << "Missing \'}\'." << endl;
+            cout << "Missing \'}\' at line: " << root->line << endl;
         }
         else if (cnt1 < 0)
         {
-            cout << "Missing \'{\'." << endl;
+            cout << "Missing \'{\' at line: " << root->line << endl;
         }
         if (cnt2 > 0)
         {
-            cout << "Missing \')\'." << endl;
+            cout << "Missing \')\' at line: " << root->line << endl;
         }
         else if (cnt2 < 0)
         {
-            cout << "Missing \'(\'." << endl;
+            cout << "Missing \'(\' at line: " << root->line << endl;
         }
         if (cnt3 > 0)
         {
-            cout << "Missing \']\'." << endl;
+            cout << "Missing \']\' at line: " << root->line << endl;
         }
         else if (cnt3 < 0)
         {
-            cout << "Missing \'[\'." << endl;
+            cout << "Missing \'[\' at line: " << root->line << endl;
         }
-        // æ¥ä¸‹æ¥è®¡ç®—ç»¼åˆå±æ€§
-        // å½“å‡ºç°å£°æ˜è¯­å¥æ—¶
-        if (p.right[0] == "type")
-        {
-            int type;
-            if (root->children[0]->token == "int")
-            {
-                type = INTEGER;
-            }
-            else if (root->children[0]->token == "bool")
-            {
-                type = BOOLEAN;
-            }
-            for (int i = 1; i < root->children.size(); i++)
-            {
-                ASTNode *temp = root->children[i];
-                if (temp->type == IDENTIFIER)
-                {
-                    // å¦‚æœå³ä¾§ä¸ºå˜é‡åˆ™æŸ¥å¡«ç¬¦å·è¡¨
-                    if (token_map[temp->token].type < 0) // é»˜è®¤æ„é€ æ—¶çš„node->typeå°äº0ï¼Œå› æ­¤typeå¤§äº0åˆ™å‡ºç°äº†é‡å£°æ˜
-                        token_map[temp->token].type = type;
-                    else // å˜é‡é‡å¤å£°æ˜
-                        cout << "Variable duplicate declaration! Error at " << temp->label << endl;
-                }
-            }
-            root->type = type;
-        }
-        // å½“å‡ºç°ä¸€èˆ¬è®¡ç®—è¯­å¥æ—¶
+        // ½ÓÏÂÀ´¼ÆËã×ÛºÏÊôĞÔ
+        // µ±³öÏÖÒ»°ã¼ÆËãÓï¾äÊ±
         else if (p.str == PRO_EXP_ID)
         {
-            // æ£€æŸ¥ä¸¤ä¾§çš„ç±»å‹
-            // è‹¥ä¸ä¸€è‡´åˆ™è¾“å‡ºé”™è¯¯ä¿¡æ¯
+            // ¼ì²éÁ½²àµÄÀàĞÍ
+            // Èô²»Ò»ÖÂÔòÊä³ö´íÎóĞÅÏ¢
             if (root->children[0]->type != root->children[1]->type)
             {
                 cout << "Cannot operate variables of different types! Error at " << root->children[0]->label << endl;
             }
-            // å¯¹çˆ¶èŠ‚ç‚¹çš„ç±»å‹è¿›è¡Œæ›´æ–°
+            // ¶Ô¸¸½ÚµãµÄÀàĞÍ½øĞĞ¸üĞÂ
             root->type = root->children[0]->type;
         }
-        // å½“å‡ºç°è®¡ç®—é—­åŒ…æ—¶
+        // µ±³öÏÖ¼ÆËã±Õ°üÊ±
         else if (p.left == "B'")
         {
             root->type = (root->children.size() == 1) ?: root->children[1]->type;
         }
-        // å½“äº§ç”Ÿå¼æŒ‡å‘å•ç‹¬çš„æ ‡è¯†ç¬¦æˆ–å¸¸é‡æ—¶
+        // µ±²úÉúÊ½Ö¸Ïòµ¥¶ÀµÄ±êÊ¶·û»ò³£Á¿Ê±
         else if (p.right.size() == 1)
         {
             if (p.right[0] == "id")
@@ -639,7 +653,7 @@ public:
             }
             // else if (p.right[0] == "num")
             // {
-            //     root->type = 
+            //     root->type =
             // }
         }
     }
@@ -668,7 +682,7 @@ public:
         else
             return;
         vector<string> right = p.right;
-        // ç”Ÿæˆå­ç»“ç‚¹
+        // Éú³É×Ó½áµã
         for (auto i : right)
         {
             ASTNode *temp = new ASTNode;
@@ -687,7 +701,7 @@ public:
                 temp->set(elements[index2]);
                 index2++;
             }
-            // æ‰§è¡Œåˆ¶å¯¼ç¿»è¯‘
+            // Ö´ĞĞÖÆµ¼·­Òë
         }
     }
 
@@ -723,24 +737,24 @@ public:
             }
             cout << "}" << endl;
         }
-        // è¾“å‡ºé¢„æµ‹åˆ†æè¡¨
-        // åˆ—æ•°&è¡Œæ•°
+        // Êä³öÔ¤²â·ÖÎö±í
+        // ÁĞÊı&ĞĞÊı
         int row = NON_TERMINAL_LIST.size();
         int col = TERMINAL_LIST.size() + 1;
-        // æ„é€ è¡¨å¤´
+        // ¹¹Ôì±íÍ·
         vector<string> D;
         D.push_back(" ");
         for (auto iter : TERMINAL_LIST)
         {
             D.push_back(iter);
         }
-        // æ„é€ åˆ—å¤´
+        // ¹¹ÔìÁĞÍ·
         vector<string> R;
         for (auto iter : NON_TERMINAL_LIST)
         {
             R.push_back(iter);
         }
-        // æ„é€ æœ€å¤§åˆ—å®½
+        // ¹¹Ôì×î´óÁĞ¿í
         vector<int> max;
         max.push_back(5);
         for (auto i : TERMINAL_LIST)
@@ -753,21 +767,21 @@ public:
             }
             max.push_back(maxlen);
         }
-        // æ„é€ è¡¨æ•°æ®
+        // ¹¹Ôì±íÊı¾İ
         vector<vector<string>> Str;
         for (int i = 0; i < row; i++)
         {
             vector<string> temp;
-            string n = R[i]; // éç»ˆç»“ç¬¦
+            string n = R[i]; // ·ÇÖÕ½á·û
             temp.push_back(n);
             for (int j = 1; j < col; j++)
             {
-                string t = D[j]; // ç»ˆç»“ç¬¦
+                string t = D[j]; // ÖÕ½á·û
                 temp.push_back(pre_table[n][t].str);
             }
             Str.push_back(temp);
         }
-        // ç»˜åˆ¶é¢„æµ‹åˆ†æè¡¨
+        // »æÖÆÔ¤²â·ÖÎö±í
         Draw_Datas(max, Str, D, col, row);
 
         // for (auto i : history)
@@ -785,27 +799,27 @@ public:
     }
 };
 
-// int main()
-// {
-//     cout << "TEST START!" << endl;
-//     // ASTNode root;
-//     // root.set("S");
-//     // ASTNode node1;
-//     // node1.label = "A";
-//     // ASTNode node2;
-//     // node2.label = "B";
-//     // AST tree;
-//     // tree.init(&root);
-//     // tree.insert(&root, &node1);
-//     // tree.insert(&root, &node2);
-//     // tree.show(&root);
+int main()
+{
+    cout << "TEST START!" << endl;
+    // ASTNode root;
+    // root.set("S");
+    // ASTNode node1;
+    // node1.label = "A";
+    // ASTNode node2;
+    // node2.label = "B";
+    // AST tree;
+    // tree.init(&root);
+    // tree.insert(&root, &node1);
+    // tree.insert(&root, &node2);
+    // tree.show(&root);
 
-//     LexAnalysis la("runtest.c");
-//     la.analysis();
-//     la.showResult();
-//     vector<string> tl;
-//     vector<node> e = la.elements;
-//     node n("$");
-//     e.push_back(n);
-//     LL1 l(tl, e);
-// }
+    LexAnalysis la("runtest.c");
+    la.analysis();
+    la.showResult();
+    map<string, node> tm = la.token_map;
+    vector<node> e = la.elements;
+    node n("$");
+    e.push_back(n);
+    LL1 l(e, tm);
+}

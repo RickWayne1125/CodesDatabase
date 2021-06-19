@@ -6,7 +6,10 @@ int funct1(int x, int y{
     int ans;
     while (a = x + y)
     {
-        ans = a & b;
+        ans = a b;
         x = x + 1;
     };
+    return ans;
 };
+int ans;
+ans = funct1(int b int a)

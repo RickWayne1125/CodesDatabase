@@ -86,8 +86,8 @@ public:
             else if (temp == '\n' || temp == '\r')
             {
                 cout << "huanhang" << endl;
-                // index += 2;
-                index += 1;
+                index += 2;
+                // index += 1;
                 cur_line++;
                 continue;
             }
@@ -322,10 +322,10 @@ public:
     }
 };
 
-int main()
-{
-    char *file = "caltest.c";
-    LexAnalysis la(file);
-    la.analysis();
-    la.showResult();
-}
+// int main()
+// {
+//     char *file = "caltest.c";
+//     LexAnalysis la(file);
+//     la.analysis();
+//     la.showResult();
+// }

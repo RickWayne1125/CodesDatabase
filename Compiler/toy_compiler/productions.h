@@ -51,9 +51,9 @@ set<string> TERMINAL_LIST = {
 #define PRO_DEC_FUNCT "DEC -> ( PARAM ) { BLOCK } ;"
 // #define PRO_FUNCT "FUNCT -> ( PARAM ) { BLOCK }"
 #define PRO_PARAM "PARAM -> type A PARAM"
-#define PRO_PARAM_SPLIT "PARAM -> ,"
+#define PRO_PARAM_SPLIT "PARAM -> , PARAM"
 #define PRO_PARAM_NONE "PARAM -> none"
-#define PRO_EXP_FUNCT "S' -> id ( PARAM ) ;"
+// #define PRO_EXP_FUNCT "S' -> id ( PARAM ) ;"
 #define PRO_EXP_RETURN "S' -> return B ;"
 
 #define PRO_GET "S' -> get ( ID ) ;"
@@ -62,7 +62,9 @@ set<string> TERMINAL_LIST = {
 #define PRO_ID_LIST "ID' -> , ID"
 #define PRO_NONE_ID "ID' -> none"
 #define PRO_EQUAL "S' -> A = B ;"
-#define PRO_EXP_ID "B -> id B'"
+#define PRO_EXP_ID "B -> id B' FUNCT"
+#define PRO_FUNCT_PARAM "FUNCT -> ( PARAM )"
+#define PRO_FUNCT_NONE "FUNCT -> none"
 #define PRO_EXP_NUM "B -> num B'"
 #define PRO_EXP_CLO "B -> ( B )" // 表达式闭包
 #define PRO_EXP_ADD "B' -> + B B'"
@@ -128,7 +130,9 @@ vector<string>
         PRO_NONE_ELSE,
         PRO_NONE_ID,
         PRO_GET, PRO_PUT,
-        PRO_EXP_RETURN, PRO_EXP_PARAM,
+        PRO_EXP_RETURN, 
+        // PRO_EXP_PARAM,
+        PRO_FUNCT_NONE,PRO_FUNCT_PARAM,
         // TEST1,
         // TEST2,
         // TEST3,
