@@ -33,12 +33,36 @@ struct ASTNode
     int code;                   // 每个节点的唯一标识符
     vector<ASTNode *> children; // 子节点
     string label;               // 对应终结符/非终结符
-    void set(string l, int c)
+    // 语法制导翻译所需属性
+    string token;  // 为终结符时的标志，同时也可以作为符号表入口指向token map中的位置
+    int type;      // 该节点所表示的类型
+    int int_val;   // 该节点的整型值
+    bool bool_val; // 该节点的布尔值
+
+    void set(string l, int c, string t = "")
     {
         this->label = l;
         this->parent = nullptr;
         this->code = c;
+        this->token = t;
         // this->next_sibling = nullptr;
+    }
+    void set(string t)
+    {
+        this->token = t;
+    }
+    void set(node element)
+    {
+        this->token = element.msg;
+        this->type = element.value;
+    }
+    void setValue(int i)
+    {
+        int_val = i;
+    }
+    void setValue(bool b)
+    {
+        bool_val = b;
     }
 };
 class AST
@@ -83,7 +107,8 @@ public:
     }
     void DFS(ASTNode *root)
     {
-        cout << "node" << root->code << "[label=\"" << root->label << "\"];" << endl;
+        string label = (root->token == "") ? root->label : root->token;
+        cout << "node" << root->code << "[label=\"" << label << "\"];" << endl;
         for (auto i : root->children)
         {
             DFS(i);
@@ -97,6 +122,7 @@ class LL1
 {
 private:
     vector<string> token_list;
+    map<string, node> token_map;
     vector<node> elements;
     map<string, set<string>> first_map;
     map<string, set<string>> follow_map;
@@ -110,12 +136,16 @@ private:
     vector<production> history;  // 产生式使用记录
     int index;                   // 产生式使用历史下标
     int code;                    // 当前节点编码
+    // 语法制导翻译所需属性
+    vector<string> terminal_history; // 终结符匹配历史
+    int index2;                      // 终结符下标
 
 public:
-    LL1(vector<string> tl, vector<node> e)
+    LL1(vector<string> tl, vector<node> e, map<string, node> tm)
     {
         token_list = tl;
         elements = e;
+        token_map = tm;
         initProduction();
         getFIRSTset();
         getFOLLOWset();
@@ -340,6 +370,7 @@ public:
             while (!ana_stack.empty())
             {
                 string a = e.terminal; // 输入符号a
+                string t = e.msg;      // 对应的实际符号
                 while (!ana_stack.empty() && ana_stack.top() == "none")
                 {
                     cout << "Replace None" << endl;
@@ -365,6 +396,7 @@ public:
                         {
                             cout << "Pop Success" << endl;
                             ana_stack.pop();
+                            terminal_history.push_back(t);
                             break;
                         }
                         else
@@ -420,13 +452,14 @@ public:
                     // continue;
                     break;
                 }
+                cout << endl;
             }
         }
-        cout << endl;
         if (ana_stack.empty())
         {
             cout << error_list.size() << " Errors Occured." << endl;
-            cout << "Syntax Analysis Succeed!" << endl;
+            cout << "Syntax Analysis Succeed!" << endl
+                 << endl;
         }
     }
 
@@ -483,6 +516,134 @@ public:
         }
     }
 
+    void translate(ASTNode *root)
+    {
+        production p = history[index];
+        string left = p.left;
+        vector<string> right = p.right;
+        // 先遍历计算每个子结点的属性，同时确认闭包是否完备
+        int cnt1 = 0; // {}是否完备，为0表示完备
+        int cnt2 = 0; // ()是否完备，为0表示完备
+        int cnt3 = 0; // []是否完备，为0表示完备
+        // 首先计算继承属性
+        for (auto it : root->children)
+        {
+            if (isNON_TERMINAL(it->label))
+            {
+                ASTNode *temp = it;
+                index++;
+                translate(temp);
+            }
+            else
+            {
+                if (it->label == "{")
+                {
+                    cnt1++;
+                }
+                else if (it->label == "}")
+                {
+                    cnt1--;
+                }
+                else if (it->label == "(")
+                {
+                    cnt2++;
+                }
+                else if (it->label == ")")
+                {
+                    cnt2--;
+                }
+                else if (it->label == "[")
+                {
+                    cnt3++;
+                }
+                else if (it->label == "]")
+                {
+                    cnt3--;
+                }
+            }
+        }
+        if (cnt1 > 0)
+        {
+            cout << "Missing \'}\'." << endl;
+        }
+        else if (cnt1 < 0)
+        {
+            cout << "Missing \'{\'." << endl;
+        }
+        if (cnt2 > 0)
+        {
+            cout << "Missing \')\'." << endl;
+        }
+        else if (cnt2 < 0)
+        {
+            cout << "Missing \'(\'." << endl;
+        }
+        if (cnt3 > 0)
+        {
+            cout << "Missing \']\'." << endl;
+        }
+        else if (cnt3 < 0)
+        {
+            cout << "Missing \'[\'." << endl;
+        }
+        // 接下来计算综合属性
+        // 当出现声明语句时
+        if (p.right[0] == "type")
+        {
+            int type;
+            if (root->children[0]->token == "int")
+            {
+                type = INTEGER;
+            }
+            else if (root->children[0]->token == "bool")
+            {
+                type = BOOLEAN;
+            }
+            for (int i = 1; i < root->children.size(); i++)
+            {
+                ASTNode *temp = root->children[i];
+                if (temp->type == IDENTIFIER)
+                {
+                    // 如果右侧为变量则查填符号表
+                    if (token_map[temp->token].type < 0) // 默认构造时的node->type小于0，因此type大于0则出现了重声明
+                        token_map[temp->token].type = type;
+                    else // 变量重复声明
+                        cout << "Variable duplicate declaration! Error at " << temp->label << endl;
+                }
+            }
+            root->type = type;
+        }
+        // 当出现一般计算语句时
+        else if (p.str == PRO_EXP_ID)
+        {
+            // 检查两侧的类型
+            // 若不一致则输出错误信息
+            if (root->children[0]->type != root->children[1]->type)
+            {
+                cout << "Cannot operate variables of different types! Error at " << root->children[0]->label << endl;
+            }
+            // 对父节点的类型进行更新
+            root->type = root->children[0]->type;
+        }
+        // 当出现计算闭包时
+        else if (p.left == "B'")
+        {
+            root->type = (root->children.size() == 1) ?: root->children[1]->type;
+        }
+        // 当产生式指向单独的标识符或常量时
+        else if (p.right.size() == 1)
+        {
+            if (p.right[0] == "id")
+            {
+                root->type = token_map[root->children[0]->label].type;
+            }
+            // else if (p.right[0] == "num")
+            // {
+            //     root->type = 
+            // }
+        }
+    }
+
     void getASTree()
     {
         cout << "INIT AST......" << endl;
@@ -491,6 +652,7 @@ public:
         root->set("S", code);
         tree.init(root);
         index = 0;
+        index2 = 0;
         DFS(root);
     }
     void DFS(ASTNode *root)
@@ -506,6 +668,7 @@ public:
         else
             return;
         vector<string> right = p.right;
+        // 生成子结点
         for (auto i : right)
         {
             ASTNode *temp = new ASTNode;
@@ -518,6 +681,13 @@ public:
                 index++;
                 DFS(temp);
             }
+            else if (isTERMINAL(i) && i != "none")
+            {
+                // if (index2 < terminal_history.size())
+                temp->set(elements[index2]);
+                index2++;
+            }
+            // 执行制导翻译
         }
     }
 
@@ -615,27 +785,27 @@ public:
     }
 };
 
-int main()
-{
-    cout << "TEST START!" << endl;
-    // ASTNode root;
-    // root.set("S");
-    // ASTNode node1;
-    // node1.label = "A";
-    // ASTNode node2;
-    // node2.label = "B";
-    // AST tree;
-    // tree.init(&root);
-    // tree.insert(&root, &node1);
-    // tree.insert(&root, &node2);
-    // tree.show(&root);
+// int main()
+// {
+//     cout << "TEST START!" << endl;
+//     // ASTNode root;
+//     // root.set("S");
+//     // ASTNode node1;
+//     // node1.label = "A";
+//     // ASTNode node2;
+//     // node2.label = "B";
+//     // AST tree;
+//     // tree.init(&root);
+//     // tree.insert(&root, &node1);
+//     // tree.insert(&root, &node2);
+//     // tree.show(&root);
 
-    LexAnalysis la("error_test.c");
-    la.analysis();
-    la.showResult();
-    vector<string> tl;
-    vector<node> e = la.elements;
-    node n("$");
-    e.push_back(n);
-    LL1 l(tl, e);
-}
+//     LexAnalysis la("runtest.c");
+//     la.analysis();
+//     la.showResult();
+//     vector<string> tl;
+//     vector<node> e = la.elements;
+//     node n("$");
+//     e.push_back(n);
+//     LL1 l(tl, e);
+// }

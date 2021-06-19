@@ -198,11 +198,6 @@ struct production
     {
         std::cout << "Production: ";
         std::cout << str;
-        // std::cout << left << " -> ";
-        // for (int i = 0; i < right.size(); i++)
-        // {
-        //     std::cout << right[i] << ' ';
-        // }
         std::cout << endl;
     }
 };

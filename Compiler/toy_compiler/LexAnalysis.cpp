@@ -322,10 +322,10 @@ public:
     }
 };
 
-// int main()
-// {
-//     char *file = "caltest.c";
-//     LexAnalysis la(file);
-//     la.analysis();
-//     la.showResult();
-// }
+int main()
+{
+    char *file = "caltest.c";
+    LexAnalysis la(file);
+    la.analysis();
+    la.showResult();
+}

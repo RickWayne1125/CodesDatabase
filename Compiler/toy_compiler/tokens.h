@@ -18,14 +18,15 @@
 #define STRING  5
 #define HEXINT  6
 #define HEXDOU  7
+#define BOOLEAN 8
 // Otherwords
-#define FUNCT   8
-#define RETURN  9
-#define IF      10
-#define ELSE    11
-#define FOR     12
-#define WHILE   13
-#define TYPE    14
+#define FUNCT   15
+#define RETURN  16
+#define IF      17
+#define ELSE    18
+#define FOR     19
+#define WHILE   20
+#define TYPE    21
 // Operators
 #define ADD     128     // +
 #define SUB     129     // -

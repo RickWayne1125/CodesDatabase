@@ -18,6 +18,7 @@ public:
     string msg;        // true value in string
     vector<int> lines; // lines exist the token
     string terminal;   // terminal symbol
+    int type;          // real type (only for identifier)
     node(int v = IDENTIFIER, int l = 1, string m = LEX_ERROR)
     {
         value = v;
@@ -27,6 +28,7 @@ public:
         terminal = (v == IDENTIFIER) ? "id" : (v == INTEGER || v == DOUBLE) ? "num"
                                           : (v == TYPE)                     ? "type"
                                                                             : m;
+        type = -999;
     }
     node(string t)
     {
