@@ -768,6 +768,12 @@ public:
             string MIPS = "SYSCALL";
             mips.push_back(MIPS);
         }
+        // 回收临时变量寄存器
+        if (isNON_TERMINAL(root->token))
+        {
+            reg_index = root->reg;
+            regs.erase(root->token);
+        }
     }
 
     void getASTree()
@@ -907,6 +913,10 @@ public:
             }
         }
         tree.show(root);
+        for (auto it : mips)
+        {
+            cout << it << endl;
+        }
     }
     void getTarget()
     {
@@ -967,7 +977,7 @@ int main()
     // tree.insert(&root, &node2);
     // tree.show(&root);
 
-    LexAnalysis la("error_test.c");
+    LexAnalysis la("caltest.c");
     la.analysis();
     la.showResult();
     map<string, node> tm = la.token_map;
