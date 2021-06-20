@@ -1,4 +1,4 @@
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler
--- Configuring done
--- Generating done
--- Build files have been written to: /mnt/c/Resources/github/OnlineCodes/Compiler/toy_compiler
+WSL not found at: C:\Users\Ricky\AppData\Local\Microsoft\WindowsApps\ubuntu1804.exe Configure
+
+Cannot get compiler information:
+	Connection refused: connect
