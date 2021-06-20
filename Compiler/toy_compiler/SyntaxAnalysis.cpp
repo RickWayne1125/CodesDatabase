@@ -141,6 +141,7 @@ private:
     // 语法制导翻译所需属性
     vector<string> terminal_history; // 终结符匹配历史
     int index2;                      // 终结符下标
+    map<string, string> reg;         // 寄存器组（key为变量名，）
 
 public:
     LL1(vector<node> e, map<string, node> tm)
