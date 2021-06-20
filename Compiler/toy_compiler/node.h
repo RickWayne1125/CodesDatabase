@@ -19,6 +19,7 @@ public:
     vector<int> lines; // lines exist the token
     string terminal;   // terminal symbol
     int type;          // real type (only for identifier)
+    int reg;           // 对应的寄存器编号
     node(int v = IDENTIFIER, int l = 1, string m = LEX_ERROR)
     {
         value = v;

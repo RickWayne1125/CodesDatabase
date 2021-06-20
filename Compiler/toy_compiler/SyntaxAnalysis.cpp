@@ -39,6 +39,7 @@ struct ASTNode
     int int_val;   // 该节点的整型值
     bool bool_val; // 该节点的布尔值
     int line;      // 该节点所在行数
+    int reg;       // 对应的临时寄存器编号
 
     void set(string l, int c, string t = "")
     {
@@ -141,7 +142,11 @@ private:
     // 语法制导翻译所需属性
     vector<string> terminal_history; // 终结符匹配历史
     int index2;                      // 终结符下标
-    map<string, string> reg;         // 寄存器组（key为变量名，）
+    // 目标代码生成所需属性
+    int reg_index;         // 当前最大寄存器编号
+    vector<string> mips;   // MIPS指令
+    map<string, int> regs; // 寄存器组映射表，key为常量/标识符，value为寄存器编号
+    int last_address;      // 最近一次操作的地址（用于goto）
 
 public:
     LL1(vector<node> e, map<string, node> tm)
@@ -149,6 +154,7 @@ public:
         // token_list = tl;
         elements = e;
         token_map = tm;
+        reg_index = 0;
         initProduction();
         getFIRSTset();
         getFOLLOWset();
@@ -527,10 +533,22 @@ public:
         production p = history[index];
         string left = p.left;
         vector<string> right = p.right;
+        getTarget();                   // 首先将变量和常量的寄存器分配好
+        int address = mips.size() - 1; // 当前指令的地址
         // 先遍历计算每个子结点的属性，同时确认闭包是否完备
         int cnt1 = 0; // {}是否完备，为0表示完备
         int cnt2 = 0; // ()是否完备，为0表示完备
         int cnt3 = 0; // []是否完备，为0表示完备
+        // 给当前节点分配临时寄存器
+        if (root->token == "id")
+        {
+            root->reg = token_map[root->label].reg;
+        }
+        else
+        {
+            root->reg = reg_index;
+            reg_index++;
+        }
         // 首先计算继承属性
         int type;
         for (auto it : root->children)
@@ -617,12 +635,24 @@ public:
             cout << "Missing \'[\' at line: " << root->line << endl;
         }
         // 接下来计算综合属性
+        // 当出现赋值语句的时候
+        else if (p.str == PRO_EQUAL)
+        {
+            string MIPS = "LI reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
+            mips.push_back(MIPS);
+        }
+        // 当出现A->id时
+        else if (p.str == PRO_ID_A)
+        {
+            string MIPS = "MOVE reg" + to_string(token_map[root->children[0]->label].reg) + ", reg" + to_string(root->reg);
+            mips.push_back(MIPS);
+        }
         // 当出现一般计算语句时
         else if (p.str == PRO_EXP_ID || p.str == PRO_EXP_NUM)
         {
             // 检查两侧的类型
             // 若不一致则输出错误信息
-            if (p.left == "id" || p.left == "num")
+            if (p.right[0] == "id" || p.right[0] == "num")
             {
                 if (root->children[0]->type != root->children[1]->type && root->children[1]->type >= 0 && root->children[0]->type >= 0)
                 {
@@ -631,6 +661,8 @@ public:
             }
             // 对父节点的类型进行更新
             root->type = root->children[0]->type;
+            string MIPS = "MOVE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg);
+            mips.push_back(MIPS);
         }
         // 当出现计算闭包时
         else if (p.left == "B'")
@@ -649,6 +681,57 @@ public:
                     cout << "Missing Operator at line: " << root->line << endl;
                 }
             }
+            if (p.right[0] == "+")
+            {
+                string MIPS = "ADD reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "-")
+            {
+                string MIPS = "SUB reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "*")
+            {
+                string MIPS = "MUL reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "/")
+            {
+                string MIPS = "DIV reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg);
+                mips.push_back(MIPS);
+                MIPS = "MFLO reg" + to_string(root->parent->reg);
+            }
+            else if (p.right[0] == "==")
+            {
+                string MIPS = "BEQ reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "<=")
+            {
+                string MIPS = "BLE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == ">=")
+            {
+                string MIPS = "BGE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "!=")
+            {
+                string MIPS = "BNE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "<")
+            {
+                string MIPS = "BLT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] > ">")
+            {
+                string MIPS = "BGT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                mips.push_back(MIPS);
+            }
         }
         // 当产生式指向单独的标识符或常量时
         else if (p.right.size() == 1)
@@ -661,6 +744,29 @@ public:
             // {
             //     root->type =
             // }
+        }
+        else if (p.str == PRO_EXP_WHILE)
+        {
+            string go_back = "J " + address;
+            last_address = address;
+            int label = last_address;
+            mips.push_back(to_string(label) + ":");
+            translate(root->children[2]); // 翻译条件块
+            translate(root->children[5]); // 翻译执行块
+            mips.push_back(go_back);
+        }
+        else if (p.str == PRO_EXP_IF || p.str == PRO_EXP_IF_ELSE)
+        {
+            last_address = address + 2;
+            int label = address;
+            mips.push_back(to_string(label) + ":");
+            translate(root->children[2]); // 翻译条件块
+            translate(root->children[5]); // 翻译执行块
+        }
+        else if (p.str == PRO_GET || p.str == PRO_PUT)
+        {
+            string MIPS = "SYSCALL";
+            mips.push_back(MIPS);
         }
     }
 
@@ -802,6 +908,48 @@ public:
         }
         tree.show(root);
     }
+    void getTarget()
+    {
+        // 首先为常量分配寄存器
+        for (auto it : elements)
+        {
+            if (it.terminal == "num")
+            {
+                regs.insert(pair<string, int>(it.msg, reg_index));
+                string MIPS = "LI reg" + to_string(reg_index) + ", " + it.msg;
+                mips.push_back(MIPS);
+                reg_index++;
+            }
+        }
+        // 之后为声明的变量分配寄存器
+        // for (auto it : token_map)
+        // {
+        //     it.second.reg = reg_index;
+        //     regs.insert(pair<string, int>(it.second.msg, reg_index));
+        //     reg_index++;
+        // }
+    }
+    // string toMIPS(string op, int t = -1, int r1 = -1, int r2 = -1) // r2可以表示操作寄存器或者目标地址
+    // {
+    //     string MIPS;
+    //     if (op == "+" || op == "-" || op == "*" || op == "/" ||)
+    //     {
+    //         MIPS = op + " $REG" + to_string(t);
+    //         if (r1 != -1)
+    //         {
+    //             MIPS += " $REG" + to_string(r1);
+    //         }
+    //     }
+    // }
+    // void translateMIPS(ASTNode *root)
+    // {
+    //     if (root->children[0]->token == "id")
+    //     {
+    //         if (token_map[root->children[0]->label].type == INTEGER)
+    //         {
+    //         }
+    //     }
+    // }
 };
 
 int main()
@@ -819,17 +967,12 @@ int main()
     // tree.insert(&root, &node2);
     // tree.show(&root);
 
-    // LexAnalysis la("error_test.c");
-    // la.analysis();
-    // la.showResult();
-    // map<string, node> tm = la.token_map;
-    // vector<node> e = la.elements;
-    // node n("$");
-    // e.push_back(n);
-    // LL1 l(e, tm);
-    cout << "Missing \')\' at line: 1" << endl;
-    cout << "Missing Operator at line: 10" << endl;
-    cout << "Missing Operate Number at line: 11" << endl;
-    cout << "Cannot operate variables of different types! Error between a and bl at line: 12" << endl;
-    cout << "Variable duplicate declaration! Error of ans at line: 16" << endl;
+    LexAnalysis la("error_test.c");
+    la.analysis();
+    la.showResult();
+    map<string, node> tm = la.token_map;
+    vector<node> e = la.elements;
+    node n("$");
+    e.push_back(n);
+    LL1 l(e, tm);
 }
