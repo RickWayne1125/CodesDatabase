@@ -704,32 +704,42 @@ public:
             }
             else if (p.right[0] == "==")
             {
-                string MIPS = "BEQ reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BEQ reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
                 mips.push_back(MIPS);
             }
             else if (p.right[0] == "<=")
             {
-                string MIPS = "BLE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BLE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
                 mips.push_back(MIPS);
             }
             else if (p.right[0] == ">=")
             {
-                string MIPS = "BGE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BGE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
                 mips.push_back(MIPS);
             }
             else if (p.right[0] == "!=")
             {
-                string MIPS = "BNE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BNE reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
                 mips.push_back(MIPS);
             }
             else if (p.right[0] == "<")
             {
-                string MIPS = "BLT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BLT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
                 mips.push_back(MIPS);
             }
             else if (p.right[0] > ">")
             {
-                string MIPS = "BGT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg), last_address;
+                string MIPS = "BGT reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg)+to_string(last_address);
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "&")
+            {
+                string MIPS = "AND reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
+                mips.push_back(MIPS);
+            }
+            else if (p.right[0] == "|")
+            {
+                string MIPS = "OR reg" + to_string(root->reg) + ", reg" + to_string(root->children[0]->reg) + ", reg" + to_string(root->children[1]->reg);
                 mips.push_back(MIPS);
             }
         }
@@ -763,8 +773,18 @@ public:
             translate(root->children[2]); // ·­ÒëÌõ¼þ¿é
             translate(root->children[5]); // ·­ÒëÖ´ÐÐ¿é
         }
-        else if (p.str == PRO_GET || p.str == PRO_PUT)
+        else if (p.str == PRO_GET)
         {
+            string v0 = "LI $v0, 5";
+            mips.push_back(MIPS);
+            string MIPS = "SYSCALL";
+            mips.push_back(MIPS);
+            string move = "MOVE reg"+to_string(root->reg)+", $v0"
+        }
+        else if(p.str == PRO_PUT){
+            string v0 = "LI $v0, 0";
+            mips.push_back(MIPS);
+            string add = "ADD reg" + to_string(root->reg) + ", reg" + to_string(root->reg) + ", $zero"; 
             string MIPS = "SYSCALL";
             mips.push_back(MIPS);
         }
