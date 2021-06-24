@@ -1,0 +1,6 @@
+Temp >= 50, Alarm = on -> FireAlarm = on
+Temp >= 35, Frog >= 40, Alarm = on -> FireAlarm = on
+Dust >= 70, Alarm = on -> DustAlarm = on
+Wet >= 60, Alarm = on -> WetAlarm = on
+DustAlarm = on, Temp >= 40 -> ExpAlarm = on
+WetAlarm = on, Temp >= 40 -> ExpAlarm = on

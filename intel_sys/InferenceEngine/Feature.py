@@ -14,6 +14,8 @@ class Feature:
     def show(self):
         print(self.text)
 
+
+# TEST PART
 if __name__ == '__main__':
     f = Feature("Temp > 18")
     f.show()
