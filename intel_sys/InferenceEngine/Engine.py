@@ -16,9 +16,13 @@ def compare(dict1, dict2):
 
 class Engine():
     def __init__(self, path) -> None:
+        self.path = path
+        self.init()
+
+    def init(self):
         self.rules = []
         # 从本地文件读取产生式规则
-        with open(path, 'r', encoding='utf-8')as f:
+        with open(self.path, 'r', encoding='utf-8')as f:
             for line in f.readlines():
                 self.rules.append(Rule(line.split('\n')[0]))
         # 通过产生式规则集合生成属性字典
@@ -29,25 +33,33 @@ class Engine():
             for feature in rule.features:
                 if(not self.attributes.__contains__(feature.left)):
                     self.attributes.setdefault(feature.left, None)
+        self.initAttributes()
+        self.initAvailableRules()
 
     def initAttributes(self):
         for a in self.attributes:
             self.attributes[a] = None
 
+    def initAvailableRules(self):
+        # 初始化可用的产生式集合
+        self.available_rules = self.rules[:]
+
     def run(self):
         old_attr = {}
         new_attr = self.attributes
-        # 初始化可用的产生式集合
-        self.available_rules = self.rules[:]
+        # self.available_rules = self.rules[:]
+        # 产生结果集合
+        self.history = []
         while(not compare(old_attr, new_attr)):
             old_attr.update(self.attributes)
             self.inferForward()
             new_attr = self.attributes
-            print('old_attr: ', old_attr)
-            print('new_attr: ', new_attr)
+            # print('old_attr: ', old_attr)
+            # print('new_attr: ', new_attr)
+        return self.history
 
     def judge(self, feature):
-        if(self.attributes.get(feature.left) == None):
+        if(self.attributes.get(feature.left) == None or self.attributes.get(feature.left) == ''):
             return False
         x = self.attributes.get(feature.left)
         y = feature.right
@@ -98,6 +110,7 @@ class Engine():
         if len(match_rules) > 0:
             # 消除当前所有可以匹配的规则之间的冲突，根据匹配规则选出合适的规则进行规约
             rule = self.choose(match_rules)
+            self.history.append(rule.fact.text)
             # match_rules[0].show()
             print('\nEXECUTE: ', rule.text)
             # 执行规约结果
@@ -117,7 +130,15 @@ class Engine():
         print(self.attributes)
 
     def set(self, attr, value):
-        self.attributes[attr] = value
+        if(self.attributes.__contains__(attr)):
+            self.attributes[attr] = value
+        else:
+            self.attributes.setdefault(attr, value)
+
+    def changeRule(self, index, rule):
+        self.rules[index] = rule
+        rule.show()
+        self.initAvailableRules
 
 
 # TEST PART
