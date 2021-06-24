@@ -38,7 +38,7 @@ class Engine():
         old_attr = {}
         new_attr = self.attributes
         # 初始化可用的产生式集合
-        self.available_rules = self.rules
+        self.available_rules = self.rules[:]
         while(not compare(old_attr, new_attr)):
             old_attr.update(self.attributes)
             self.inferForward()
