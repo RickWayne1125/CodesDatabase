@@ -4,7 +4,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1200, 1600)
+        MainWindow.resize(1200, 750)
         MainWindow.setStyleSheet("QPushButton{\n"
                                  "    \n"
                                  "    border-radius:15px;\n"
@@ -61,7 +61,7 @@ class Ui_MainWindow(object):
         self.textEdit_2.setObjectName("textEdit_2")
         # 添加知识库表
         self.tableWidget1 = QtWidgets.QTableWidget(self.widget)
-        self.tableWidget1.setGeometry(QtCore.QRect(20, 268, 1160, 400))
+        self.tableWidget1.setGeometry(QtCore.QRect(20, 230, 1160, 250))
         self.tableWidget1.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.tableWidget1.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.tableWidget1.setLineWidth(34)
@@ -95,7 +95,7 @@ class Ui_MainWindow(object):
         self.tableWidget1.verticalHeader().setStretchLastSection(False)
         # 添加属性表
         self.tableWidget2 = QtWidgets.QTableWidget(self.widget)
-        self.tableWidget2.setGeometry(QtCore.QRect(20, 700, 1160, 850))
+        self.tableWidget2.setGeometry(QtCore.QRect(20, 490, 1160, 250))
         self.tableWidget2.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.tableWidget2.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.tableWidget2.setLineWidth(34)
@@ -135,10 +135,10 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "推理机"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Inference Engine"))
         self.label.setText(_translate("MainWindow", "输入事实"))
         self.textEdit.setPlaceholderText(
-            _translate("MainWindow", "若有多个条件，使用', '分割"))
+            _translate("MainWindow", "条件之间使用', '分割"))
         self.pushButton1.setText(_translate("MainWindow", "开始推理"))
         self.pushButton2.setText(_translate("MainWindow", "清空记录"))
         self.label_2.setText(_translate("MainWindow", "推理结果"))
