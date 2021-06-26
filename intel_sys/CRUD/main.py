@@ -188,44 +188,6 @@ def create_feature_rule(db: MySQLdb.Connection) -> bool:
     __create(db, 'FeatureRule', PyInquirer.prompt(__enter_feature_rule))
     return True
 
-# def create_department(db: MySQLdb.Connection) -> bool:
-#     __create(db, 'Department', PyInquirer.prompt(__enter_department))
-#     return True
-
-
-# def create_staff(db: MySQLdb.Connection) -> bool:
-#     __create(db, 'Staff', PyInquirer.prompt(__enter_staff))
-#     return True
-
-
-# def remove_departments(db: MySQLdb.Connection) -> bool:
-#     __remove(db, 'Department', PyInquirer.prompt(__filter_department))
-#     return True
-
-
-# def remove_staffs(db: MySQLdb.Connection) -> bool:
-#     __remove(db, 'Staff', PyInquirer.prompt(__filter_staff))
-#     return True
-
-
-# def update_staff_salary(db: MySQLdb.Connection) -> bool:
-#     args = PyInquirer.prompt([{
-#         'type': 'input', 'name': 'st_id', 'message': 'Enter target staff ID:', 'validate': __not_null
-#     }, {
-#         'type': 'input', 'name': 'st_salary', 'message': 'Enter new salary:', 'validate': __not_null
-#     }])
-#     cs = db.cursor()
-#     cs.execute('SELECT COUNT(*) FROM Staff WHERE st_id = %s', (args['st_id'],))
-#     if cs.fetchone()[0] != 1:
-#         print('No such staff')
-#     else:
-#         cs.execute('UPDATE Staff SET st_salary = %s WHERE st_id = %s',
-#                    (args['st_salary'], args['st_id']))
-#         db.commit()
-#     print()
-#     cs.close()
-#     return True
-
 
 def main():
     db = MySQLdb.connect(host=config.DB['host'],

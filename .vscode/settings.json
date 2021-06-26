@@ -82,5 +82,6 @@
         "valarray": "cpp",
         "variant": "cpp",
         "xstring": "cpp"
-    }
+    },
+    "python.pythonPath": "/usr/bin/python"
 }
