@@ -40,6 +40,7 @@ def __create(db: MySQLdb.Connection, table: str, args: Dict[str, str]):
            ', '.join(['%s'] * len(cols)) + ')'
     cs = db.cursor()
     cs.execute(stmt, tuple([args[k] for k in cols]))
+    db.commit()
     print()
     cs.close()
 
