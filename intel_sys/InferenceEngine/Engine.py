@@ -44,8 +44,6 @@ class Engine():
         # 初始化可用的产生式集合
         self.available_rules = []
         self.available_rules = self.rules[:]
-        for r in self.available_rules:
-            print(r.text)
 
     def run(self):
         old_attr = {}
