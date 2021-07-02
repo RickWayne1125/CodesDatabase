@@ -42,7 +42,10 @@ class Engine():
 
     def initAvailableRules(self):
         # 初始化可用的产生式集合
+        self.available_rules = []
         self.available_rules = self.rules[:]
+        for r in self.available_rules:
+            print(r.text)
 
     def run(self):
         old_attr = {}
@@ -86,8 +89,10 @@ class Engine():
                 if(num < len(rule.features)):
                     num = len(rule.features)
                     choice = rule
+        # 使用首次匹配
         elif(method == 'first'):
             choice = match_rules[0]
+        # 使用最近匹配
         elif(method == 'last'):
             choice = match_rules[-1]
         return choice
@@ -138,7 +143,7 @@ class Engine():
     def changeRule(self, index, rule):
         self.rules[index] = rule
         rule.show()
-        self.initAvailableRules
+        self.initAvailableRules()
 
 
 # TEST PART
